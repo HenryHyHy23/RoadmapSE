@@ -125,6 +125,7 @@ async function loadSubjectsFromJSON() {
 }
 
 document.addEventListener('DOMContentLoaded', loadSubjectsFromJSON);
+document.addEventListener('DOMContentLoaded', loadChallengesFromJSON);
 
 // === PHẦN 3: TÌM KIẾM BÀI HỌC ===
 function findLessonDeep(lessons, targetType) {
@@ -426,75 +427,144 @@ function closeQuiz() {
 
 // === PHẦN 7: CONTACT FORM ===
 const FEEDBACK_URL = "https://roadmapse.onrender.com/feedback";
-
 const contactForm = document.getElementById("contactForm");
 
+const patterns = {
+    name: /^[\p{L}\s]{3,50}$/u,
+    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    phone: /(84|0[3|5|7|8|9])+([0-9]{8})\b/,
+    message: /^[\s\S]{10,500}$/
+};
+
+// Thông báo lỗi tương ứng
+const errorMessages = {
+    name: "Tên phải từ 3-50 ký tự chữ cái (không bao gồm số).",
+    email: "Email không hợp lệ.",
+    phone: "Số điện thoại không đúng định dạng VN.",
+    message: "Tin nhắn cần dài từ 10-500 ký tự."
+};
+
+function showError(input, message) {
+    const feedbackDiv = input.parentElement.querySelector('.invalid-feedback');
+    
+    input.classList.add('is-invalid');
+    input.classList.remove('is-valid');
+    
+    if (feedbackDiv) {
+        feedbackDiv.textContent = message;
+        feedbackDiv.style.display = 'block';
+    }
+}
+
+function showSuccess(input) {
+    const feedbackDiv = input.parentElement.querySelector('.invalid-feedback');
+    
+    input.classList.remove('is-invalid');
+    input.classList.add('is-valid');
+    
+    if (feedbackDiv) {
+        feedbackDiv.style.display = 'none';
+    }
+}
+
+function validateField(input) {
+    const value = input.value.trim();
+    const fieldName = input.id;
+    
+    // Trường phone là optional
+    if (fieldName === 'phone' && value === '') {
+        input.classList.remove('is-invalid', 'is-valid');
+        return true;
+    }
+    
+    // Kiểm tra required fields
+    if (input.hasAttribute('required') && value === '') {
+        showError(input, "Trường này không được để trống.");
+        return false;
+    }
+    
+    // Kiểm tra pattern
+    if (patterns[fieldName]) {
+        const isValid = patterns[fieldName].test(value);
+        
+        if (!isValid) {
+            showError(input, errorMessages[fieldName]);
+            return false;
+        } else {
+            showSuccess(input);
+            return true;
+        }
+    }
+    
+    showSuccess(input);
+    return true;
+}
+
 if (contactForm) {
+    console.log("Contact Form Script Loaded!");
+
+    const inputs = contactForm.querySelectorAll('input, textarea');
+
+    // Validate khi blur (rời khỏi input)
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        // Xóa lỗi khi bắt đầu gõ lại
+        input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+                const feedbackDiv = this.parentElement.querySelector('.invalid-feedback');
+                if (feedbackDiv) {
+                    feedbackDiv.style.display = 'none';
+                }
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+
+    // Xử lý submit
     contactForm.addEventListener("submit", async function (e) {
         e.preventDefault();
-        const form = this;
-        const patterns = {
-            name: /^[\p{L}\s]{3,50}$/u,
-            email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            phone:/^(0|\+84)(32|33|34|35|36|37|38|39|86|96|97|98|70|76|77|78|79|89|90|93|81|82|83|84|85|88|91|94|56|58|59)\d{7}$/,
-            message: /^[\s\S]{10,500}$/
-        };
+        console.log("Submitting...");
 
-        const nameInput = document.getElementById("name");
-        const emailInput = document.getElementById("email");
-        const phoneInput = document.getElementById("phone");
-        const messageInput = document.getElementById("message");
-        const submitBtn = form.querySelector("button[type='submit']");
+        // Validate tất cả các fields
+        let isFormValid = true;
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
 
-        if (!nameInput || !emailInput || !messageInput || !submitBtn) {
-            console.error("Missing form elements");
-            return;
-        }
-
-        nameInput.setCustomValidity(
-            patterns.name.test(nameInput.value.trim())
-                ? ""
-                : "Name must be 3–50 letters"
-        );
-
-        emailInput.setCustomValidity(
-            patterns.email.test(emailInput.value.trim())
-                ? ""
-                : "Invalid email address"
-        );
-
-        if (phoneInput && phoneInput.value.trim()) {
-            phoneInput.setCustomValidity(
-                patterns.phone.test(phoneInput.value.trim())
-                    ? ""
-                    : "Phone must be belong to Vietnam mobile numbers"
-            );
-        } else if (phoneInput) {
-            phoneInput.setCustomValidity("");
-        }
-
-        messageInput.setCustomValidity(
-            patterns.message.test(messageInput.value.trim())
-                ? ""
-                : "Message must be 10–500 characters"
-        );
-
-        if (!form.checkValidity()) {
+        // Nếu form không hợp lệ, dừng lại và HIỂN THỊ LỖI
+        if (!isFormValid) {
             e.stopPropagation();
-            form.classList.add("was-validated");
+            contactForm.classList.add("was-validated");
+            
+            // Scroll đến field đầu tiên có lỗi
+            const firstInvalid = contactForm.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
             return;
         }
 
-        const data = {
-            name: nameInput.value.trim(),
-            email: emailInput.value.trim(),
-            phone: phoneInput ? phoneInput.value.trim() : "",
-            message: messageInput.value.trim()
-        };
+        // Gửi dữ liệu khi mọi thứ OK
+        const submitBtn = contactForm.querySelector("button[type='submit']");
+        const originalBtnText = submitBtn.innerHTML;
 
         try {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+
+            const data = {
+                name: document.getElementById("name").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                message: document.getElementById("message").value.trim()
+            };
 
             const res = await fetch(FEEDBACK_URL, {
                 method: "POST",
@@ -502,39 +572,22 @@ if (contactForm) {
                 body: JSON.stringify(data)
             });
 
-            if (!res.ok) throw new Error("Server error");
-
             const result = await res.json();
 
-            if (result.success) {
-                const successMsg = document.getElementById("submitSuccessMessage");
-                const errorMsg = document.getElementById("submitErrorMessage");
-                
-                if (successMsg) successMsg.classList.remove("d-none");
-                if (errorMsg) errorMsg.classList.add("d-none");
-                
-                form.reset();
-                form.classList.remove("was-validated");
-                
-                if (!successMsg) {
-                    alert("Cảm ơn bạn đã phản hồi!");
-                }
+            if (res.ok && result.success) {
+                alert("Gửi thành công!");
+                contactForm.reset();
+                inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
+                contactForm.classList.remove("was-validated");
             } else {
-                throw new Error("Save failed");
+                throw new Error("Lỗi Server");
             }
-
         } catch (err) {
-            console.error("Lỗi:", err);
-            
-            const errorMsg = document.getElementById("submitErrorMessage");
-            if (errorMsg) {
-                errorMsg.classList.remove("d-none");
-            } else {
-                alert("Lỗi gửi thông tin. Vui lòng thử lại!");
-            }
+            console.error(err);
+            alert("Có lỗi xảy ra khi gửi. Vui lòng thử lại.");
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Submit';
+            submitBtn.innerHTML = originalBtnText;
         }
     });
 }
