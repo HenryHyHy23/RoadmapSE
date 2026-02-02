@@ -6,7 +6,8 @@
         "name": "Tiếng Nhật sơ cấp",
         "desc": "Ôn tập bảng chữ cái và ngữ pháp cơ bản.",
         "status": "active",
-        "image": "assets/jpd113.jpg"
+        "image": "assets/jpd113.jpg",
+        "mindmap": "assets/jpd123.jpg"
     },
     {
         "id": "subj2",
@@ -15,7 +16,8 @@
         "name": "Xác suất Thống kê",
         "desc": "Các công thức xác suất và kiểm định giả thuyết.",
         "status": "locked",
-        "image": "assets/mas291.jpg"
+        "image": "assets/mas291.jpg",
+        "mindmap": "assets/mas.jpg"
     },
     {
         "id": "subj3",
@@ -24,7 +26,8 @@
         "name": "Hệ quản trị CSDL",
         "desc": "Truy vấn SQL và thiết kế Database.",
         "status": "locked",
-        "image": "assets/dbi202.jpg"
+        "image": "assets/dbi202.jpg",
+        "mindmap":"assets/dbi.jpg"
     },
     {
         "id": "subj4",
@@ -33,7 +36,8 @@
         "name": "Java nâng cao",
         "desc": "Lập trình hướng đối tượng.",
         "status": "locked",
-        "image": "assets/lab211.jpg"
+        "image": "assets/lab211.jpg",
+        "mindmap":"assets/null.jpg"
     },
     {
         "id": "subj5",
@@ -42,6 +46,7 @@
         "name": "Nhập môn KTPM",
         "desc": "Quy trình phần mềm và mô hình.",
         "status": "locked",
-        "image": "assets/swe202c.jpg"
+        "image": "assets/swe202c.jpg",
+        "mindmap":"assets/null.jpg"
     }
 ]

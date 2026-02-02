@@ -248,9 +248,9 @@ async function loadChallengesFromJSON() {
                         <div class="card-body p-5">
                             <span class="badge bg-primary bg-gradient-primary-to-secondary mb-3 px-3 py-2 rounded-pill">${item.code}</span>
                             <h2 class="fw-bolder mb-3">${item.name}</h2>
-                            <p class="lead text-muted mb-4">${item.desc}</p>
+                            <p class="lead text-muted mb-4">Xem lại kiến thức môn học qua Mindmap</p>
                             <hr>
-                            <p>${item.mindmap || 'Chưa có sơ đồ tư duy'}</p>
+                            <img src="${item.mindmap}"> 
                         </div>
                     </div>
                 </div>
