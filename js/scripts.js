@@ -150,8 +150,17 @@ document.addEventListener('click', function(e) {
             
             if (lesson) {
                 // Đổ dữ liệu vào Offcanvas
+                const contentContainer = document.getElementById('offcanvasContent');
                 document.getElementById('offcanvasTitle').textContent = lesson.name;
-                document.getElementById('offcanvasContent').innerHTML = lesson.content;
+                contentContainer.innerHTML = lesson.content;
+                
+                // Gọi MathJax để render lại công thức toán học
+                // Chúng ta đợi nội dung HTML được nạp xong rồi mới ra lệnh render
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([contentContainer]).catch(function (err) {
+                        console.error('MathJax error:', err.message);
+                    });
+                }
                 
                 // Hiển thị Offcanvas
                 const offcanvasElement = document.getElementById('lessonOffcanvas');
