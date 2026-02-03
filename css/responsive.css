@@ -1,13 +1,4 @@
-/* ==========================================
-   RESPONSIVE CSS - OPTIMIZED & CONFLICT-FREE
-   Dành cho: index.html, learn.html, challenge.html, checklist.html, contact.html
-   ========================================== */
 
-/* ==========================================
-   1. GLOBAL RESET & BASE
-   ========================================== */
-
-/* Prevent horizontal scroll on all devices */
 body,
 html {
     overflow-x: hidden;
