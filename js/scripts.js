@@ -248,7 +248,7 @@ async function loadChallengesFromJSON() {
                         <div class="card-body p-5">
                             <span class="badge bg-primary bg-gradient-primary-to-secondary mb-3 px-3 py-2 rounded-pill">${item.code}</span>
                             <h2 class="fw-bolder mb-3">${item.name}</h2>
-                            <p class="lead text-muted mb-4">Xem lại kiến thức môn học qua Mindmap</p>
+                            <p class="lead text-muted mb-4">Xem lại kiến thức môn học qua mindmap</p>
                             <hr>
                             <img src="${item.mindmap}"> 
                         </div>
@@ -273,6 +273,16 @@ let currentIdx = 0;
 let score = 0;          
 let userChoice = null;  
 let hasAnswered = false;
+
+// ===== HÀM SHUFFLE ARRAY =====
+function shuffleArray(array) {
+    const shuffled = [...array]; // Tạo copy để không ảnh hưởng array gốc
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
 
 async function fetchQuestions(categoryCode) {
     questions = []; currentIdx = 0; score = 0;
@@ -304,6 +314,7 @@ async function fetchQuestions(categoryCode) {
             return;
         }
 
+        // ===== MAP VÀ SHUFFLE CÂU HỎI =====
         questions = rawData.map(item => ({
             id: item.id,
             text: item.question_text,
@@ -311,6 +322,11 @@ async function fetchQuestions(categoryCode) {
             correct: item.correct_answer ? item.correct_answer.trim().toUpperCase() : '',
             explanation: item.explanation
         }));
+
+        // SHUFFLE THỨ TỰ CÁC CÂU HỎI
+        questions = shuffleArray(questions);
+        
+        console.log('🔀 Shuffled questions:', questions.length);
 
         loadQuestion(); 
 
@@ -337,15 +353,34 @@ function loadQuestion() {
     nextBtn.disabled = true; 
     nextBtn.innerText = (currentIdx === questions.length - 1) ? 'Kết thúc' : 'Tiếp theo';
 
+    // ===== SHUFFLE ĐÁP ÁN =====
+    // Tạo array chứa [option, originalLabel] để track đáp án đúng
+    const optionsWithLabels = q.options.map((opt, idx) => ({
+        text: opt,
+        originalLabel: labels[idx]
+    }));
+    
+    // Shuffle các đáp án
+    const shuffledOptions = shuffleArray(optionsWithLabels);
+    
+    // Tìm vị trí mới của đáp án đúng
+    const correctIndex = shuffledOptions.findIndex(opt => opt.originalLabel === q.correct);
+    const newCorrectLabel = labels[correctIndex];
+    
+    // Lưu lại đáp án đúng mới cho câu hỏi này
+    q.shuffledCorrect = newCorrectLabel;
+    
+    console.log(`📝 Q${currentIdx + 1}: Original correct = ${q.correct}, Shuffled correct = ${newCorrectLabel}`);
+
     contentDiv.innerHTML = `
         <div class="question-text">
             <h4 class="mb-0">Câu ${currentIdx + 1}: ${q.text}</h4>
         </div>
         <div id="options-container">
-            ${q.options.map((opt, index) => `
+            ${shuffledOptions.map((opt, index) => `
                 <div class="option-btn" id="opt-${labels[index]}" onclick="selectAnswer('${labels[index]}')">
                     <span class="option-label">${labels[index]}</span>
-                    <span class="option-text">${opt}</span>
+                    <span class="option-text">${opt.text}</span>
                 </div>
             `).join('')}
         </div>
@@ -364,7 +399,7 @@ function selectAnswer(userPick) {
     hasAnswered = true;
 
     const q = questions[currentIdx];
-    const correctLabel = q.correct;
+    const correctLabel = q.shuffledCorrect; // SỬ DỤNG SHUFFLED CORRECT
     
     const userBtn = document.getElementById(`opt-${userPick}`);
     const correctBtn = document.getElementById(`opt-${correctLabel}`);

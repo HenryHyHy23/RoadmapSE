@@ -1777,13 +1777,11 @@ textarea.form-control {
 
 .timeline-node.active .node-circle {
   background-color: #F27226;
-  box-shadow: 0 0 0 5px rgba(242, 114, 38, 0.3);
   transform: translate(-50%, -50%) scale(1.2);
 }
 
 .timeline-node.active .node-card-wrapper .card {
   border-color: #F27226;
-  box-shadow: 0 0 20px rgba(242, 114, 38, 0.2);
 }
 
 .timeline-node.active .node-card-wrapper::after {
