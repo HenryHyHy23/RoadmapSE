@@ -85,7 +85,7 @@ app.get('/init-db', async (req, res) => {
             VALUES ?`;
         
         const values = [
-            // === JPD (TIẾNG NHẬT) - 20 Câu ===
+            // === JPD (TIẾNG NHẬT) - 79 Câu ===
             ['JPD', 'Chữ cái "あ" đọc là gì?', 'A', 'I', 'U', 'E', 'A', 'Trong bảng Hiragana, "あ" là nguyên âm đầu tiên, phát âm là "A".'],
             ['JPD', 'Nghĩa của từ "Arigatou"?', 'Xin chào', 'Tạm biệt', 'Cảm ơn', 'Xin lỗi', 'C', '"Arigatou" (ありがとう) dùng để nói lời cảm ơn thông thường.'],
             ['JPD', 'Số 1 trong tiếng Nhật là?', 'Ichi', 'Ni', 'San', 'Yon', 'A', 'Số đếm: 1-Ichi, 2-Ni, 3-San, 4-Yon/Shi.'],
@@ -168,7 +168,7 @@ app.get('/init-db', async (req, res) => {
             ['JPD', 'Tầng 10 có cách đọc đặc biệt là gì?', 'じゅっかい (jukkai)', 'じゅうかい (jūkai)', 'とおかい (tōkai)', 'いっかい (ikkai)', 'A', 'Tầng 10 có cách đọc đặc biệt là じゅっかい (jukkai).'],
 
 
-            // === MAS (XÁC SUẤT) - 20 Câu ===
+            // === MAS (XÁC SUẤT) - 69 Câu ===
             ['MAS', 'Xác suất tung đồng xu ngửa?', '25%', '50%', '75%', '100%', 'B', 'Đồng xu có 2 mặt, xác suất là 1/2.'],
             ['MAS', 'Median của {1, 3, 5} là?', '1', '3', '5', '9', 'B', 'Median là số ở giữa của dãy đã sắp xếp.'],
             ['MAS', 'Ký hiệu σ (Sigma) là?', 'Trung bình', 'Phương sai', 'Độ lệch chuẩn', 'Mốt', 'C', 'Sigma (σ) là độ lệch chuẩn.'],
@@ -240,7 +240,7 @@ app.get('/init-db', async (req, res) => {
             ['MAS', 'Tham số regression nào biểu diễn slope?', 'β0', 'β1', 'R', 'SSE', 'B', 'β1 là slope.'],
             ['MAS', 'Cái nào là coefficient of determination?', 'R', 'R²', 'β1', 'σ', 'B', 'R² giải thích mức độ biến thiên.'],
             
-            // === DBI (DATABASE) - 20 Câu ===
+            // === DBI (DATABASE) - 41 Câu ===
             ['DBI', 'Lệnh xóa toàn bộ bảng?', 'DELETE', 'DROP', 'REMOVE', 'CLEAR', 'B', 'DROP TABLE xóa cả bảng và cấu trúc.'],
             ['DBI', 'SQL viết tắt của?', 'Structured Query Language', 'Simple Query List', 'Strong Question Language', 'Standard Query Link', 'A', 'Structured Query Language.'],
             ['DBI', 'Primary Key phải?', 'Duy nhất', 'Không NULL', 'Cả A và B', 'Tùy ý', 'C', 'PK phải Unique và Not Null.'],

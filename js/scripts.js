@@ -620,16 +620,46 @@ if (contactForm) {
             const result = await res.json();
 
             if (res.ok && result.success) {
-                alert("Gửi thành công!");
+                // Hiển thị thông báo thành công
+                const successAlert = document.createElement('div');
+                successAlert.className = 'alert alert-success form-alert mt-3';
+                successAlert.innerHTML = `
+                    <strong>Gửi thành công!</strong> Cảm ơn bạn đã kết nối với Cạp nha.
+                `;
+                submitBtn.parentElement.appendChild(successAlert);
+                
+                // Reset form
                 contactForm.reset();
                 inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
                 contactForm.classList.remove("was-validated");
+                
+                // Tự động ẩn sau 5 giây
+                setTimeout(() => {
+                    successAlert.style.transition = 'opacity 0.5s';
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => successAlert.remove(), 500);
+                }, 5000);
             } else {
                 throw new Error("Lỗi Server");
             }
         } catch (err) {
             console.error(err);
-            alert("Có lỗi xảy ra khi gửi. Vui lòng thử lại.");
+            
+            // Hiển thị thông báo lỗi
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'alert alert-danger form-alert mt-3';
+            errorAlert.innerHTML = `
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Có lỗi xảy ra!</strong> Vui lòng thử lại sau.
+            `;
+            submitBtn.parentElement.appendChild(errorAlert);
+            
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                errorAlert.style.transition = 'opacity 0.5s';
+                errorAlert.style.opacity = '0';
+                setTimeout(() => errorAlert.remove(), 500);
+            }, 5000);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
