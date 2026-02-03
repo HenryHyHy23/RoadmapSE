@@ -152,8 +152,18 @@ document.addEventListener('click', function(e) {
             const lesson = findLessonDeep(subject.subLessons, lessonType);
             
             if (lesson) {
-                const offcanvasTitleEl = document.getElementById('offcanvasTitle');
-                const offcanvasContentEl = document.getElementById('offcanvasContent');
+                // Đổ dữ liệu vào Offcanvas
+                const contentContainer = document.getElementById('offcanvasContent');
+                document.getElementById('offcanvasTitle').textContent = lesson.name;
+                contentContainer.innerHTML = lesson.content;
+                
+                // Gọi MathJax để render lại công thức toán học
+                // Chúng ta đợi nội dung HTML được nạp xong rồi mới ra lệnh render
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([contentContainer]).catch(function (err) {
+                        console.error('MathJax error:', err.message);
+                    });
+                }
                 
                 if (offcanvasTitleEl && offcanvasContentEl) {
                     offcanvasTitleEl.textContent = lesson.name;
