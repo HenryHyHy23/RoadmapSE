@@ -165,16 +165,10 @@ document.addEventListener('click', function(e) {
                     });
                 }
                 
-                if (offcanvasTitleEl && offcanvasContentEl) {
-                    offcanvasTitleEl.textContent = lesson.name;
-                    offcanvasContentEl.innerHTML = lesson.content;
-                    
-                    const offcanvasElement = document.getElementById('lessonOffcanvas');
-                    if (offcanvasElement && typeof bootstrap !== 'undefined') {
-                        const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
-                        offcanvas.show();
-                    }
-                }
+                // Hiển thị Offcanvas
+                const offcanvasElement = document.getElementById('lessonOffcanvas');
+                const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+                offcanvas.show();
             }
         }
     }
