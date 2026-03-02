@@ -497,9 +497,7 @@ app.use((err, req, res, next) => {
 // ── Start ──────────────────────────────────────────────────────────────────
 module.exports = app;
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server: http://localhost:${PORT}`);
-        console.log(`API docs: http://localhost:${PORT}/api`);
-    });
+app.listen(PORT, () => {
+    console.log(`Server: http://localhost:${PORT}`);
+    console.log(`API docs: http://localhost:${PORT}/api`)
 }
