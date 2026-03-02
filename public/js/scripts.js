@@ -361,6 +361,28 @@ function loadQuestion() {
         startQuizTimer();
     }
 }
+function closeQuiz() {
+    document.getElementById('quiz-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    // Reset lại state
+    questions = [];
+    currentIdx = 0;
+    score = 0;
+    hasAnswered = false;
+    userQuizHistory = [];
+    // Hiện lại footer
+    const footer = document.querySelector('.quiz-footer');
+    if (footer) footer.style.display = '';
+}
+
+function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
 
 function selectAnswer(userPick) {
     if (hasAnswered) return;
