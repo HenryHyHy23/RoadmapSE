@@ -500,4 +500,4 @@ module.exports = app;
 app.listen(PORT, () => {
     console.log(`Server: http://localhost:${PORT}`);
     console.log(`API docs: http://localhost:${PORT}/api`)
-}
+});
