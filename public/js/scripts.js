@@ -295,7 +295,14 @@ function saveHighScore(category, newScore) {
         localStorage.setItem('roadmap_high_scores', JSON.stringify(scores));
     }
 }
-
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 async function fetchQuestions(categoryCode) {
     questions = []; currentIdx = 0; score = 0; userQuizHistory = [];
     currentCategory = categoryCode;
