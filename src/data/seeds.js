@@ -228,7 +228,7 @@ const SEED_QUESTIONS = [
     ['LAB', 'Test Scenario khác Test Case chỗ nào?', 'Nó dài hơn', 'Nó bao quát hơn (kịch bản tổng quát)', 'Nó khó viết hơn', 'Nó tốn tiền hơn', 'B', 'Kịch bản kiểm thử chứa nhiều test case.'],
     ['LAB', 'Sanity Testing làm khi nào?', 'Mới nhận project', 'Kiểm tra nhanh sau khi fix bug/build mới', 'Lúc đi ngủ', 'Khi deploy xong 1 năm', 'B', 'Kiểm tra tính ổn định sơ bộ.'],
     ['LAB', 'User Acceptance Test (UAT) do ai làm?', 'Dev', 'Tester chuyên nghiệp', 'Người dùng cuối hoặc khách hàng', 'Designer', 'C', 'Kiểm thử chấp nhận bởi người dùng.'],
-    ['LAB', 'Traceability Matrix (RTM) dùng để?', 'Vẽ sơ đồ', 'Truy vết yêu cầu và test case', 'Tính lương', 'Quản lý server', 'B', 'Đảm bảo mọi yêu cầu đều được kiểm thử.']
+    ['LAB', 'Traceability Matrix (RTM) dùng để?', 'Vẽ sơ đồ', 'Truy vết yêu cầu và test case', 'Tính lương', 'Quản lý server', 'B', 'Đảm bảo mọi yêu cầu đều được kiểm thử.'],
 
             // === SWEc (SOFTWARE ENGINEERING) - 30 Câu ===
             ['SWEc', 'SDLC là gì?', 'Software Design', 'System Design', 'Software Development Life Cycle', 'System Life', 'C', 'Vòng đời phát triển phần mềm.'],

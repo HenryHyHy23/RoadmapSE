@@ -1,6 +1,3 @@
-// ===== QUIZ TIMER SYSTEM (SOUND REMOVED) =====
-console.log('⏱️ Quiz Timer System Loading (Silent Mode)...');
-
 // Global variables
 let quizTimerInterval = null;
 let quizStartTime = null;

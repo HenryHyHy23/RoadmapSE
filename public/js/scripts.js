@@ -126,7 +126,7 @@ async function loadSubjectsFromJSON() {
 }
 
 document.addEventListener('DOMContentLoaded', loadSubjectsFromJSON);
-document.addEventListener('DOMContentLoaded', loadChallengesFromJSON);
+
 
 // === PHẦN 3: TÌM KIẾM BÀI HỌC ===
 function findLessonDeep(lessons, targetType) {
