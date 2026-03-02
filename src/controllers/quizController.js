@@ -7,7 +7,6 @@ const SEED_DATA = require('../data/seeds');
 const quizController = {
     /**
      * GET /api/quiz/:category
-     * Trả về 20 câu ngẫu nhiên theo môn
      */
     async getByCategory(req, res) {
         try {
@@ -54,7 +53,7 @@ const quizController = {
 
     /**
      * GET /init-db
-     * Khởi tạo & seed database (chỉ dùng 1 lần)
+     * Khởi tạo & seed database 
      */
     async initDatabase(req, res) {
         const connection = await pool.getConnection();
@@ -67,7 +66,7 @@ const quizController = {
             const count = SEED_DATA.length;
             connection.release();
 
-            console.log(`✅ Init DB xong: ${count} câu hỏi đã được nạp`);
+            console.log(` Init DB xong: ${count} câu hỏi đã được nạp`);
             res.json({
                 success: true,
                 message: `Nạp thành công ${count} câu hỏi lên Aiven!`

@@ -2,7 +2,6 @@ const pool = require('../config/db');
 
 const Question = {
     /**
-     * Lấy ngẫu nhiên 20 câu theo category
      * @param {string} category - JPD | DBI | MAS | LAB | SWEc
      */
     async getByCategory(category) {
@@ -12,7 +11,7 @@ const Question = {
              FROM Questions 
              WHERE category = ? 
              ORDER BY RAND() 
-             LIMIT 20`,
+             LIMIT 30`,
             [category]
         );
         return rows;
