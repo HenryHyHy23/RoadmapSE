@@ -310,15 +310,31 @@ async function fetchQuestions(categoryCode) {
     const quizContentEl = document.getElementById('quiz-content');
     document.getElementById('subject-title').innerText = "Quiz: " + categoryCode;
     document.getElementById('quiz-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Kiểm tra có tiến trình đang dở không
+    const saved = loadQuizProgress();
+    if (saved && saved.category === categoryCode) {
+        const resume = confirm(`Bạn đang làm dở Quiz ${categoryCode} ở câu ${saved.currentIdx + 1}. Tiếp tục không?`);
+        if (resume) {
+            questions = saved.questions;
+            currentIdx = saved.currentIdx;
+            score = saved.score;
+            userQuizHistory = saved.userQuizHistory;
+            loadQuestion();
+            return;
+        } else {
+            clearQuizProgress();
+        }
+    }
+
     quizContentEl.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-primary"></div><p>Đang tải câu hỏi...</p></div>';
-    document.body.style.overflow = 'hidden'; 
 
     try {
         const res = await fetch(`${API_URL}/${categoryCode}`);
         const rawData = await res.json();
-        const questionsData = rawData.data || rawData; 
+        const questionsData = rawData.data || rawData;
 
-        // TRỘN VÀ LẤY TỐI ĐA 30 CÂU
         let allQuestions = questionsData.map(item => ({
             id: item.id,
             text: item.question_text,
@@ -327,10 +343,10 @@ async function fetchQuestions(categoryCode) {
             explanation: item.explanation
         }));
 
-        questions = shuffleArray(allQuestions).slice(0, 30); 
-        loadQuestion(); 
-    } catch (error) { 
-        quizContentEl.innerHTML = '<h5 class="text-center text-danger mt-5">Lỗi kết nối Server!</h5>'; 
+        questions = shuffleArray(allQuestions).slice(0, 30);
+        loadQuestion();
+    } catch (error) {
+        quizContentEl.innerHTML = '<h5 class="text-center text-danger mt-5">Lỗi kết nối Server!</h5>';
     }
 }
 
@@ -369,24 +385,28 @@ function loadQuestion() {
     }
 }
 function closeQuiz() {
+    if (questions.length > 0 && currentIdx < questions.length) {
+        saveQuizProgress();
+    }
     document.getElementById('quiz-modal').style.display = 'none';
     document.body.style.overflow = '';
-    // Reset lại state
     questions = [];
     currentIdx = 0;
     score = 0;
     hasAnswered = false;
     userQuizHistory = [];
-    // Hiện lại footer
     const footer = document.querySelector('.quiz-footer');
-    if (footer) footer.style.display = '';
+    if (footer) 
+        footer.style.display = '';
 }
 
 function nextQuestion() {
     currentIdx++;
     if (currentIdx < questions.length) {
+        saveQuizProgress(); 
         loadQuestion();
     } else {
+        clearQuizProgress(); 
         showResult();
     }
 }
@@ -417,6 +437,33 @@ function selectAnswer(userPick) {
         document.getElementById(`opt-${q.shuffledCorrect}`).classList.add('correct');
         document.getElementById('explanation').style.display = 'block';
     }
+}
+// Lưu tiến trình
+function saveQuizProgress() {
+    if (questions.length === 0) return;
+    const progress = {
+        category: currentCategory,
+        questions: questions,
+        currentIdx: currentIdx,
+        score: score,
+        userQuizHistory: userQuizHistory
+    };
+    localStorage.setItem('quiz_progress', JSON.stringify(progress));
+}
+
+// Load tiến trình
+function loadQuizProgress() {
+    try {
+        const saved = localStorage.getItem('quiz_progress');
+        return saved ? JSON.parse(saved) : null;
+    } catch {
+        return null;
+    }
+}
+
+// Xóa tiến trình khi hoàn thành
+function clearQuizProgress() {
+    localStorage.removeItem('quiz_progress');
 }
 
 function showResult() {
@@ -539,13 +586,12 @@ if (contactForm) {
 
     const inputs = contactForm.querySelectorAll('input, textarea');
 
-    // Validate khi blur (rời khỏi input)
     inputs.forEach(input => {
         input.addEventListener('blur', function() {
             validateField(this);
         });
         
-        // Xóa lỗi khi bắt đầu gõ lại
+     
         input.addEventListener('input', function() {
             if (this.classList.contains('is-invalid')) {
                 const feedbackDiv = this.parentElement.querySelector('.invalid-feedback');
@@ -570,12 +616,12 @@ if (contactForm) {
             }
         });
 
-        // Nếu form không hợp lệ, dừng lại và HIỂN THỊ LỖI
+      
         if (!isFormValid) {
             e.stopPropagation();
             contactForm.classList.add("was-validated");
             
-            // Scroll đến field đầu tiên có lỗi
+     
             const firstInvalid = contactForm.querySelector('.is-invalid');
             if (firstInvalid) {
                 firstInvalid.focus();
@@ -617,12 +663,11 @@ if (contactForm) {
                 `;
                 submitBtn.parentElement.appendChild(successAlert);
                 
-                // Reset form
                 contactForm.reset();
                 inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
                 contactForm.classList.remove("was-validated");
                 
-                // Tự động ẩn sau 5 giây
+        
                 setTimeout(() => {
                     successAlert.style.transition = 'opacity 0.5s';
                     successAlert.style.opacity = '0';
@@ -634,7 +679,7 @@ if (contactForm) {
         } catch (err) {
             console.error(err);
             
-            // Hiển thị thông báo lỗi
+          
             const errorAlert = document.createElement('div');
             errorAlert.className = 'alert alert-danger form-alert mt-3';
             errorAlert.innerHTML = `
@@ -643,7 +688,6 @@ if (contactForm) {
             `;
             submitBtn.parentElement.appendChild(errorAlert);
             
-            // Tự động ẩn sau 5 giây
             setTimeout(() => {
                 errorAlert.style.transition = 'opacity 0.5s';
                 errorAlert.style.opacity = '0';
@@ -654,4 +698,53 @@ if (contactForm) {
             submitBtn.innerHTML = originalBtnText;
         }
     });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const saved = loadQuizProgress();
+    if (!saved) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'resume-banner';
+    banner.style.cssText = `
+        position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+        background: #fff; border-radius: 16px; padding: 16px 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15); max-width: 300px;
+        border-left: 4px solid #f97316;
+    `;
+    banner.innerHTML = `
+        <p class="mb-2 fw-bold">📝 Quiz đang dở!</p>
+        <p class="mb-3 text-muted small">Bạn đang làm <strong>${saved.category}</strong> - Câu ${saved.currentIdx + 1}/${saved.questions.length}</p>
+        <div class="d-flex gap-2">
+            <button onclick="resumeQuiz()" class="btn btn-primary btn-sm rounded-pill px-3">Tiếp tục</button>
+            <button onclick="dismissResume()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Bỏ qua</button>
+        </div>
+    `;
+    document.body.appendChild(banner);
+});
+
+function resumeQuiz() {
+    const saved = loadQuizProgress();
+    if (!saved) return;
+
+    document.getElementById('resume-banner')?.remove();
+
+    // Restore state
+    questions = saved.questions;
+    currentIdx = saved.currentIdx;
+    score = saved.score;
+    userQuizHistory = saved.userQuizHistory;
+    currentCategory = saved.category;
+
+    document.getElementById('subject-title').innerText = "Quiz: " + saved.category;
+    document.getElementById('quiz-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.querySelector('.quiz-footer').style.display = '';
+
+    loadQuestion();
+}
+
+function dismissResume() {
+    clearQuizProgress();
+    document.getElementById('resume-banner')?.remove();
 }
