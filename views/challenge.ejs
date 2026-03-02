@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <%- include('partials/head', { title: 'Luyện Công' }) %>
+        <link rel="stylesheet" href="/css/quiz-timer.css">
+</head>
+
+<body class="d-flex flex-column h-100">
+    <%- include('partials/floating-shapes') %>
+
+        <main class="flex-shrink-0">
+            <%- include('partials/navbar', { page: 'challenge' }) %>
+
+                <div class="px-5 my-5">
+                    <div class="text-center mb-5">
+                        <h1 class="display-5 fw-bolder mb-0">
+                            <span class="text-gradient d-inline">Quiz</span>
+                        </h1>
+                        <p class="lead fw-normal text-muted mb-0">Ôn lại những gì đã học!!!</p>
+                    </div>
+
+                    <div id="challenge-tab" class="mb-5">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status"></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="challenge-tabContent"></div>
+                </div>
+        </main>
+
+        <%- include('partials/footer') %>
+
+            <div id="quiz-modal" class="modal-backdrop-quiz">
+                <div class="quiz-box">
+                    <div class="quiz-header">
+                        <h3 id="subject-title">Quiz</h3>
+                        <span style="cursor:pointer; font-size:24px;" onclick="closeQuiz()">&times;</span>
+                    </div>
+                    <div class="quiz-body" id="quiz-content"></div>
+                    <div class="quiz-footer">
+                        <span id="question-status" class="fw-bold text-muted">Câu 0/0</span>
+                        <button id="next-btn" onclick="nextQuestion()" disabled>Tiếp theo</button>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/js/scripts.js"></script>
+            <script src="/js/quiz-timer.js"></script>
+</body>
+
+</html>

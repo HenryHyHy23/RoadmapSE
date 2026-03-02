@@ -289,16 +289,25 @@ function editTask(taskId) {
         taskNotes: document.getElementById('taskNotes')
     };
 
-    if (elements.modalTitle) elements.modalTitle.innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Task';
-    if (elements.taskId) elements.taskId.value = task.id;
-    if (elements.taskTitle) elements.taskTitle.value = task.title;
-    if (elements.taskSubject) elements.taskSubject.value = task.subject;
-    if (elements.taskType) elements.taskType.value = task.type;
-    if (elements.taskPriority) elements.taskPriority.value = task.priority;
-    if (elements.taskDueDate) elements.taskDueDate.value = task.dueDate;
-    if (elements.taskNotes) elements.taskNotes.value = task.notes;
+    if (elements.modalTitle) 
+        elements.modalTitle.innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Task';
+    if (elements.taskId) 
+        elements.taskId.value = task.id;
+    if (elements.taskTitle) 
+        elements.taskTitle.value = task.title;
+    if (elements.taskSubject) 
+        elements.taskSubject.value = task.subject;
+    if (elements.taskType) 
+        elements.taskType.value = task.type;
+    if (elements.taskPriority) 
+        elements.taskPriority.value = task.priority;
+    if (elements.taskDueDate) 
+        elements.taskDueDate.value = task.dueDate;
+    if (elements.taskNotes) 
+        elements.taskNotes.value = task.notes;
 
-    if (modal) modal.show();
+    if (modal) 
+        modal.show();
 }
 
 // Delete task
@@ -370,14 +379,22 @@ function resetForm() {
         modalTitle: document.getElementById('modalTitle')
     };
 
-    if (elements.taskId) elements.taskId.value = '';
-    if (elements.taskTitle) elements.taskTitle.value = '';
-    if (elements.taskSubject) elements.taskSubject.value = 'LAB211';
-    if (elements.taskType) elements.taskType.value = 'reading';
-    if (elements.taskPriority) elements.taskPriority.value = 'normal';
-    if (elements.taskNotes) elements.taskNotes.value = '';
-    if (elements.taskDueDate) elements.taskDueDate.value = new Date().toISOString().split('T')[0];
-    if (elements.modalTitle) elements.modalTitle.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add New Task';
+    if (elements.taskId) 
+        elements.taskId.value = '';
+    if (elements.taskTitle) 
+        elements.taskTitle.value = '';
+    if (elements.taskSubject) 
+        elements.taskSubject.value = 'LAB211';
+    if (elements.taskType) 
+        elements.taskType.value = 'reading';
+    if (elements.taskPriority) 
+        elements.taskPriority.value = 'normal';
+    if (elements.taskNotes) 
+        elements.taskNotes.value = '';
+    if (elements.taskDueDate) 
+        elements.taskDueDate.value = new Date().toISOString().split('T')[0];
+    if (elements.modalTitle)
+        elements.modalTitle.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add New Task';
 }
 
 document.addEventListener('DOMContentLoaded', function() {

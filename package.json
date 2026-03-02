@@ -12,7 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/HenryNguyen23-FPT/RoadmapSE.git"
   },
-  "keywords": ["express", "mysql", "api", "fptu"],
+  "keywords": [
+    "express",
+    "mysql",
+    "api",
+    "fptu"
+  ],
   "author": "CapMotSach",
   "license": "ISC",
   "type": "commonjs",
@@ -23,10 +28,14 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "ejs": "^4.0.1",
     "express": "^5.2.1",
     "mysql2": "^3.16.1"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

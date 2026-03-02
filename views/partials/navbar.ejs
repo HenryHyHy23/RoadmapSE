@@ -1,0 +1,43 @@
+<!-- views/partials/navbar.ejs -->
+<nav class="navbar navbar-expand-lg navbar-light py-3">
+    <div class="container px-5">
+        <a class="navbar-brand" href="/">
+            <div class="brand-logo-circle">
+                <img src="/assets/Logo (2).png" alt="logo" width="75" height="75" class="d-inline-block align-text-top">
+            </div>
+            <div class="brand-text-container">
+                <h1 class="brand-title">Cạp Mọt Sách</h1>
+                <hr>
+                <p class="brand-subtitle">Being a Hard Working Capypara</p>
+            </div>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder gap-4">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-btn <%= page === 'home'      ? 'active' : '' %>" href="/">Nhà của
+                        Cạp</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-btn <%= page === 'learn'     ? 'active' : '' %>" href="/learn">Góc Học
+                        Tập</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-btn <%= page === 'challenge' ? 'active' : '' %>" href="/challenge">Luyện
+                        Công</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-btn <%= page === 'checklist' ? 'active' : '' %>" href="/checklist">Sổ
+                        Tay Deadline</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-btn <%= page === 'contact'   ? 'active' : '' %>" href="/contact">Tâm Sự
+                        Mỏng</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

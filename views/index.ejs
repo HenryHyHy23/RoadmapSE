@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <%- include('partials/head', { title: 'Nhà của Cạp' }) %>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <%- include('partials/floating-shapes') %>
+
+        <main class="flex-shrink-0">
+            <%- include('partials/navbar', { page: 'home' }) %>
+
+                <!-- Header -->
+                <header class="py-5">
+                    <div class="container px-5 pb-5">
+                        <div class="row gx-5 align-items-center">
+                            <div class="col-xxl-5">
+                                <div class="text-center text-xxl-start">
+                                    <div
+                                        class="badge bg-gradient-primary-to-secondary text-white mb-4 d-inline-block text-wrap px-5 py-3">
+                                        <div class="text-uppercase">Learning &middot; Developing &middot; Orientation
+                                        </div>
+                                    </div>
+                                    <div class="fs-3 fw-light text-muted fw-bolder">Hành trình học tập ở trường FPTU
+                                    </div>
+                                    <h1 class="fs-2 fw-bolder mb-5">
+                                        <span class="text-gradient d-inline">Học nhiệt tình, Chill hết mình</span>
+                                    </h1>
+                                    <div
+                                        class="d-grid gap-4 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
+                                        <a class="btn btn-primary btn-lg px-4 py-4 fw-bolder btn-home-effect"
+                                            href="/learn">Góc Học Tập</a>
+                                        <a class="btn btn-primary btn-lg px-4 py-4 fw-bolder btn-home-effect"
+                                            href="/challenge">Luyện Công</a>
+                                        <a class="btn btn-primary btn-lg px-4 py-4 fw-bolder btn-home-effect"
+                                            href="/checklist">Sổ Tay Deadline</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xxl-7">
+                                <div class="d-flex justify-content-end mt-5 mt-xxl-0">
+                                    <div class="profile bg-gradient-primary-to-secondary">
+                                        <img class="profile-img" src="/assets/profile.jpg" alt="lazy" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- About Section -->
+                <section class="py-5 position-relative">
+                    <div class="decorative-shape shape-1"></div>
+                    <div class="decorative-shape shape-2"></div>
+
+                    <div class="container px-5">
+                        <div class="text-center mb-5">
+                            <span class="section-badge">Về Chúng Tôi</span>
+                            <h2 class="display-4 fw-bolder mb-3">
+                                <span class="text-gradient-orange">Cạp Mọt Sách</span>
+                            </h2>
+                            <p class="fw-bolder lead text-muted mb-0" style="max-width: 700px; margin: 0 auto;">
+                                Đây là dự án của nhóm mình - nơi sinh viên FPTU cùng chia sẻ và học hỏi
+                            </p>
+                        </div>
+
+                        <!-- Mission -->
+                        <div class="row justify-content-center mb-5">
+                            <div class="col-lg-10">
+                                <div class="mission-box">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-10">
+                                            <h4 class="fw-bolder mb-2 intro-head">Website Của Tụi Mình</h4>
+                                            <p class="text-muted intro">
+                                                Website được tạo ra với mục đích hỗ trợ sinh viên FPTU trong quá trình
+                                                học tập.
+                                                Tại đây bạn có thể tìm thấy tài liệu học tập, roadmap các môn học,
+                                                bài tập thực hành và công cụ quản lý tiến độ học tập cá nhân.
+                                                Hãy cùng nhau trở thành những chú cóc chăm chỉ! 📝📖
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="row g-4 mb-5 stats-fixed">
+                            <div class="col-3">
+                                <div class="stats-box">
+                                    <div class="stats-number">36+</div>
+                                    <div class="small text-muted fw-semibold">Môn Học</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stats-box">
+                                    <div class="stats-number">36+</div>
+                                    <div class="small text-muted fw-semibold">Tài Liệu</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stats-box">
+                                    <div class="stats-number">36+</div>
+                                    <div class="small text-muted fw-semibold">Quiz</div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="stats-box">
+                                    <div class="stats-number">∞</div>
+                                    <div class="small text-muted fw-semibold">Động Lực</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Features -->
+                        <div class="row g-4 mb-5 features-fixed">
+                            <div class="col-3">
+                                <div class="feature-card">
+                                    <div class="feature-icon">📓</div>
+                                    <h4 class="fw-bold text-center mb-3">Tài Liệu Học Tập</h4>
+                                    <p class="text-muted text-center mb-0">
+                                        Tổng hợp slide bài giảng, tài liệu tham khảo chất lượng cho từng môn học theo
+                                        từng kỳ
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="feature-card">
+                                    <div class="feature-icon">🔥</div>
+                                    <h4 class="fw-bold text-center mb-3">Quiz & Challenge</h4>
+                                    <p class="text-muted text-center mb-0">
+                                        Ôn tập kiến thức thông qua các bài quiz và mindmap
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="feature-card">
+                                    <div class="feature-icon">☑️</div>
+                                    <h4 class="fw-bold text-center mb-3">Sổ tay Deadline</h4>
+                                    <p class="text-muted text-center mb-0">
+                                        Quản lý tiến độ học tập, theo dõi deadline và hoàn thành mục tiêu cá nhân
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="feature-card">
+                                    <div class="feature-icon">📮</div>
+                                    <h4 class="fw-bold text-center mb-3">Hỏi Cạp Qua Đây</h4>
+                                    <p class="text-muted text-center mb-0">
+                                        Giải đáp các thắc mắc về học tập....
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team -->
+                        <div class="text-center mb-4">
+                            <h3 class="fw-bold mb-4">
+                                <span class="fs-2 text-gradient-orange">Các thành viên nhóm mình</span>
+                            </h3>
+                        </div>
+                        <div class="row g-4 justify-content-center mb-5 team-row-fixed">
+                            <div class="col">
+                                <div class="team-member">
+                                    <div class="team-avatar"><span><img src="/imgs/dang1.jpg" alt="Nhật Đăng"></span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Nhật Đăng</h5>
+                                    <p class="small text-muted">Developer</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="team-member">
+                                    <div class="team-avatar"><span><img src="/imgs/tri.jpg" alt="Đức Trí"></span></div>
+                                    <h5 class="fw-bold mb-1">Đức Trí</h5>
+                                    <p class="small text-muted">Designer</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="team-member">
+                                    <div class="team-avatar"><span><img src="/imgs/trung.jpg" alt="Trần Trung"></span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Trần Trung</h5>
+                                    <p class="small text-muted">Slide</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="team-member">
+                                    <div class="team-avatar"><span><img src="/imgs/dang2.jpg" alt="Hải Đăng"></span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Hải Đăng</h5>
+                                    <p class="small text-muted">Content</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="team-member">
+                                    <div class="team-avatar"><span><img src="/imgs/nhan.jpg" alt="Trọng Nhân"></span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1">Trọng Nhân</h5>
+                                    <p class="small text-muted">Slide</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social -->
+                        <div class="text-center">
+                            <h5 class="fw-bolder mb-4">Kết Nối Với Nhóm Mình Qua</h5>
+                            <div class="d-flex justify-content-center gap-4">
+                                <a href="https://www.facebook.com/profile.php?id=61586790029686"
+                                    class="social-link text-gradient">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                                <a href="https://m.me/61586790029686" class="social-link text-gradient">
+                                    <i class="bi bi-messenger"></i>
+                                </a>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=cmsfpthcm@gmail.com"
+                                    target="_blank" class="social-link text-gradient">
+                                    <i class="bi bi-google"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+        </main>
+
+        <%- include('partials/footer') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/js/scripts.js"></script>
+</body>
+
+</html>

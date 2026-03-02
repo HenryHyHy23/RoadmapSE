@@ -44,8 +44,9 @@ async function loadSubjectsFromJSON() {
     }
 
     try {
-        const response = await fetch('data/data.json');
-        const data = await response.json();
+        const response = await fetch('/api/subjects');
+        const result = await response.json();
+        const data = result.data;
         subjectsData = data;
         const downloadBtn = document.getElementById('btn-download-dynamic');
         
@@ -186,16 +187,17 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// === PHẦN 5: LOAD CHALLENGES (chỉ chạy nếu có element) ===
+// === PHẦN 5: LOAD CHALLENGES ===
 async function loadChallengesFromJSON() {
     const tabContainer = document.getElementById('challenge-tab');
     const contentContainer = document.getElementById('challenge-tabContent');
 
-    if (!tabContainer || !contentContainer) return; // Không phải trang challenge.html
+    if (!tabContainer || !contentContainer) return; 
 
     try {
-        const response = await fetch('data/challenge-data.json');
-        const data = await response.json();
+        const response = await fetch('/api/challenges');
+        const result = await response.json();
+        const data = result;
 
         tabContainer.innerHTML = `
             <div class="timeline-container">
@@ -312,19 +314,19 @@ async function fetchQuestions(categoryCode) {
         if (!res.ok) throw new Error("Lỗi kết nối Server");
         
         const rawData = await res.json();
-
-        if (rawData.length === 0) {
+        const questionsData = rawData.data || rawData; 
+        if (questionsData.length === 0) {
             quizContentEl.innerHTML = '<p class="text-center mt-5 text-danger">Chưa có câu hỏi nào trong Database!</p>';
             return;
         }
 
         // ===== MAP VÀ SHUFFLE CÂU HỎI =====
-        questions = rawData.map(item => ({
-            id: item.id,
-            text: item.question_text,
-            options: [item.option_a, item.option_b, item.option_c, item.option_d],
-            correct: item.correct_answer ? item.correct_answer.trim().toUpperCase() : '',
-            explanation: item.explanation
+        questions = questionsData.map(item => ({  
+        id: item.id,
+        text: item.question_text,
+        options: [item.option_a, item.option_b, item.option_c, item.option_d],
+        correct: item.correct_answer ? item.correct_answer.trim().toUpperCase() : '',
+        explanation: item.explanation
         }));
 
         // SHUFFLE THỨ TỰ CÁC CÂU HỎI
