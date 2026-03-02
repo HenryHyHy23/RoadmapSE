@@ -625,6 +625,11 @@ main,
 footer {
   position: relative;
   z-index: 10;
+  
+}
+
+.navbar.sticky-top {
+  z-index: 1050;
 }
 
 
@@ -3896,3 +3901,37 @@ html {
 
 .kanji-meaning { color: #1e40af; font-weight: 600; margin-top: 8px; }
 .kanji-romaji { color: #64748b }
+
+.dot-separator {
+  font-weight: 900;
+  margin: 0 0.2rem;
+}
+
+.link-fpt {
+  position: relative;
+  text-decoration: none;
+  color: var(--fpt-orange);
+  font-weight: 500;
+  transition: color 0.25s ease, font-weight 0.25s ease;
+}
+
+.link-fpt::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background-color: var(--fpt-orange);
+  transition: width 0.3s ease;
+}
+
+.link-fpt:hover {
+  color: var(--fpt-orange-hover);
+  font-weight: 600;
+}
+
+.link-fpt:hover::after {
+  width: 100%;
+  background-color: var(--fpt-orange-hover);
+}

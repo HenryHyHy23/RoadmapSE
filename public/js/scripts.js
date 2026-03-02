@@ -145,7 +145,9 @@ document.addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-view-lesson');
     if (btn) {
         const contentId = btn.getAttribute('data-content-id');
-        const [subjectId, lessonType] = contentId.split('-');
+        const dashIndex = contentId.indexOf('-');
+        const subjectId = contentId.substring(0, dashIndex);
+        const lessonType = contentId.substring(dashIndex + 1);
         
         const subject = subjectsData.find(s => s.id === subjectId);
         
