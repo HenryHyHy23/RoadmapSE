@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // === PHẦN 1: DOWNLOAD BUTTON (chỉ chạy nếu có element) ===
+    // === PHẦN 1: DOWNLOAD BUTTON  ===
     const downloadBtn = document.getElementById('btn-download-dynamic');
     const timelineItems = document.querySelectorAll('.timeline-item');
 
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let subjectsData = [];
 
-// === PHẦN 2: LOAD SUBJECTS (chỉ chạy nếu có element) ===
+// === PHẦN 2: LOAD SUBJECTS ===
 async function loadSubjectsFromJSON() {
     const menuContainer = document.getElementById('v-pills-tab');
     const contentContainer = document.getElementById('v-pills-tabContent');
@@ -277,193 +277,157 @@ const API_URL = "https://roadmapse.onrender.com/api/quiz";
 let questions = [];     
 let currentIdx = 0;     
 let score = 0;          
-let userChoice = null;  
 let hasAnswered = false;
+let userQuizHistory = []; 
+let currentCategory = ""; 
 
-// ===== HÀM SHUFFLE ARRAY =====
-function shuffleArray(array) {
-    const shuffled = [...array]; // Tạo copy để không ảnh hưởng array gốc
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+// Hàm lấy điểm cao nhất từ localStorage
+function getHighScore(category) {
+    const scores = JSON.parse(localStorage.getItem('roadmap_high_scores') || '{}');
+    return scores[category] || 0;
+}
+
+// Hàm lưu điểm cao nhất
+function saveHighScore(category, newScore) {
+    const scores = JSON.parse(localStorage.getItem('roadmap_high_scores') || '{}');
+    if (!scores[category] || newScore > scores[category]) {
+        scores[category] = newScore;
+        localStorage.setItem('roadmap_high_scores', JSON.stringify(scores));
     }
-    return shuffled;
 }
 
 async function fetchQuestions(categoryCode) {
-    questions = []; currentIdx = 0; score = 0;
+    questions = []; currentIdx = 0; score = 0; userQuizHistory = [];
+    currentCategory = categoryCode;
 
-    const subjectTitleEl = document.getElementById('subject-title');
-    const quizModalEl = document.getElementById('quiz-modal');
     const quizContentEl = document.getElementById('quiz-content');
-    
-    if (!subjectTitleEl || !quizModalEl || !quizContentEl) return;
-
-    subjectTitleEl.innerText = "Quiz: " + categoryCode;
-    quizModalEl.style.display = 'flex';
-    quizContentEl.innerHTML = `
-        <div class="text-center mt-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2">Đang tải câu hỏi từ Server...</p>
-        </div>`;
+    document.getElementById('subject-title').innerText = "Quiz: " + categoryCode;
+    document.getElementById('quiz-modal').style.display = 'flex';
+    quizContentEl.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-primary"></div><p>Đang tải câu hỏi...</p></div>';
     document.body.style.overflow = 'hidden'; 
 
     try {
         const res = await fetch(`${API_URL}/${categoryCode}`);
-        
-        if (!res.ok) throw new Error("Lỗi kết nối Server");
-        
         const rawData = await res.json();
         const questionsData = rawData.data || rawData; 
-        if (questionsData.length === 0) {
-            quizContentEl.innerHTML = '<p class="text-center mt-5 text-danger">Chưa có câu hỏi nào trong Database!</p>';
-            return;
-        }
 
-        // ===== MAP VÀ SHUFFLE CÂU HỎI =====
-        questions = questionsData.map(item => ({  
-        id: item.id,
-        text: item.question_text,
-        options: [item.option_a, item.option_b, item.option_c, item.option_d],
-        correct: item.correct_answer ? item.correct_answer.trim().toUpperCase() : '',
-        explanation: item.explanation
+        // TRỘN VÀ LẤY TỐI ĐA 30 CÂU
+        let allQuestions = questionsData.map(item => ({
+            id: item.id,
+            text: item.question_text,
+            options: [item.option_a, item.option_b, item.option_c, item.option_d],
+            correct: item.correct_answer.trim().toUpperCase(),
+            explanation: item.explanation
         }));
 
-        // SHUFFLE THỨ TỰ CÁC CÂU HỎI
-        questions = shuffleArray(questions);
-        
-        console.log('🔀 Shuffled questions:', questions.length);
-
+        questions = shuffleArray(allQuestions).slice(0, 30); 
         loadQuestion(); 
-
-    } catch (error) {
-        console.error(error);
-        quizContentEl.innerHTML = `
-            <div class="text-center text-danger mt-5">
-                <h5>Lỗi kết nối!</h5>
-            </div>`;
+    } catch (error) { 
+        quizContentEl.innerHTML = '<h5 class="text-center text-danger mt-5">Lỗi kết nối Server!</h5>'; 
     }
 }
 
 function loadQuestion() {
+    if (typeof resetQuizTimer === 'function') resetQuizTimer();
     const q = questions[currentIdx];
-    const contentDiv = document.getElementById('quiz-content');
-    const nextBtn = document.getElementById('next-btn');
-    const statusEl = document.getElementById('question-status');
-    
-    if (!contentDiv || !nextBtn || !statusEl) return;
-    
     const labels = ['A', 'B', 'C', 'D'];
-    
     hasAnswered = false;
-    nextBtn.disabled = true; 
+    
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = true;
     nextBtn.innerText = (currentIdx === questions.length - 1) ? 'Kết thúc' : 'Tiếp theo';
 
-    // ===== SHUFFLE ĐÁP ÁN =====
-    // Tạo array chứa [option, originalLabel] để track đáp án đúng
-    const optionsWithLabels = q.options.map((opt, idx) => ({
-        text: opt,
-        originalLabel: labels[idx]
-    }));
-    
-    // Shuffle các đáp án
+    // Shuffle đáp án
+    const optionsWithLabels = q.options.map((opt, idx) => ({ text: opt, originalLabel: labels[idx] }));
     const shuffledOptions = shuffleArray(optionsWithLabels);
-    
-    // Tìm vị trí mới của đáp án đúng
-    const correctIndex = shuffledOptions.findIndex(opt => opt.originalLabel === q.correct);
-    const newCorrectLabel = labels[correctIndex];
-    
-    // Lưu lại đáp án đúng mới cho câu hỏi này
-    q.shuffledCorrect = newCorrectLabel;
-    
-    console.log(`📝 Q${currentIdx + 1}: Original correct = ${q.correct}, Shuffled correct = ${newCorrectLabel}`);
+    q.shuffledCorrect = labels[shuffledOptions.findIndex(opt => opt.originalLabel === q.correct)];
+    q.displayOptions = shuffledOptions; // Lưu lại để review
 
-    contentDiv.innerHTML = `
-        <div class="question-text">
-            <h4 class="mb-0">Câu ${currentIdx + 1}: ${q.text}</h4>
-        </div>
+    document.getElementById('quiz-content').innerHTML = `
+        <div class="question-text"><h4>Câu ${currentIdx + 1}/${questions.length}: ${q.text}</h4></div>
         <div id="options-container">
-            ${shuffledOptions.map((opt, index) => `
-                <div class="option-btn" id="opt-${labels[index]}" onclick="selectAnswer('${labels[index]}')">
-                    <span class="option-label">${labels[index]}</span>
-                    <span class="option-text">${opt.text}</span>
-                </div>
-            `).join('')}
+            ${shuffledOptions.map((opt, i) => `
+                <div class="option-btn" id="opt-${labels[i]}" onclick="selectAnswer('${labels[i]}')">
+                    <span class="option-label">${labels[i]}</span><span class="option-text">${opt.text}</span>
+                </div>`).join('')}
         </div>
-        
-        <div id="explanation" class="explanation-box">
-            <strong>💡 Giải thích:</strong>
-            <span>${q.explanation || 'Không có giải thích chi tiết.'}</span>
-        </div>
-    `;
-
-    statusEl.innerText = `Câu ${currentIdx + 1}/${questions.length}`;
+        <div id="explanation" class="explanation-box" style="display:none">
+            <strong>💡 Giải thích:</strong> <span>${q.explanation || 'Không có giải thích.'}</span>
+        </div>`;
+    
+    document.getElementById('question-status').innerText = `Tiến độ: ${currentIdx + 1}/${questions.length}`;
+    if (typeof createQuizTimerUI === 'function') {
+        createQuizTimerUI();
+        startQuizTimer();
+    }
 }
 
 function selectAnswer(userPick) {
     if (hasAnswered) return;
     hasAnswered = true;
+    if (typeof pauseQuizTimer === 'function') pauseQuizTimer();
 
     const q = questions[currentIdx];
-    const correctLabel = q.shuffledCorrect; // SỬ DỤNG SHUFFLED CORRECT
-    
     const userBtn = document.getElementById(`opt-${userPick}`);
-    const correctBtn = document.getElementById(`opt-${correctLabel}`);
-    const explanationBox = document.getElementById('explanation');
-    const nextBtn = document.getElementById('next-btn');
+    document.getElementById('next-btn').disabled = false;
 
-    if (!userBtn || !nextBtn) return;
+    // Lưu lịch sử
+    userQuizHistory.push({
+        question: q.text,
+        userPick: userPick,
+        correctLabel: q.shuffledCorrect,
+        isCorrect: userPick === q.shuffledCorrect,
+        explanation: q.explanation,
+        options: q.displayOptions
+    });
 
-    nextBtn.disabled = false;
-
-    if (userPick === correctLabel) {
-        userBtn.classList.add('correct'); 
-        score++;
+    if (userPick === q.shuffledCorrect) {
+        userBtn.classList.add('correct'); score++;
     } else {
-        userBtn.classList.add('wrong');  
-        if (correctBtn) correctBtn.classList.add('correct');
-        if (explanationBox) explanationBox.style.display = 'block';
-    }
-}
-
-function nextQuestion() {
-    currentIdx++;
-    if (currentIdx < questions.length) {
-        loadQuestion();
-    } else {
-        showResult();
+        userBtn.classList.add('wrong');
+        document.getElementById(`opt-${q.shuffledCorrect}`).classList.add('correct');
+        document.getElementById('explanation').style.display = 'block';
     }
 }
 
 function showResult() {
-    const quizContentEl = document.getElementById('quiz-content');
-    const quizFooterEl = document.querySelector('.quiz-footer');
-    
-    if (!quizContentEl) return;
+    if (typeof stopQuizTimer === 'function') stopQuizTimer();
+    saveHighScore(currentCategory, score); // Lưu điểm cao nhất
     
     const percent = Math.round((score / questions.length) * 100);
-    const msg = percent >= 50 ? "Chúc mừng! Bạn đã passed 🎉" : "Cố gắng hơn nhé! 💪";
-    const color = percent >= 50 ? "text-success" : "text-danger";
+    const highScore = getHighScore(currentCategory);
 
-    quizContentEl.innerHTML = `
-        <div class="text-center mt-5">
-            <h1 class="display-1 fw-bold ${color}">${score}/${questions.length}</h1>
-            <p class="fs-5">Điểm số của bạn</p>
-            <hr style="width: 50px; margin: 20px auto; border: 2px solid #ccc;">
-            <h3 class="mt-3">${msg}</h3>
-            <button onclick="closeQuiz()" class="btn btn-outline-dark rounded-pill px-4 mt-3">Đóng</button>
-        </div>
-    `;
-    if (quizFooterEl) quizFooterEl.style.display = 'none';
+    document.getElementById('quiz-content').innerHTML = `
+        <div class="text-center mt-4">
+            <h1 class="display-3 fw-bold ${percent >= 50 ? 'text-success' : 'text-danger'}">${score}/${questions.length}</h1>
+            <p class="text-muted">Điểm cao nhất môn này: ${highScore}/${questions.length}</p>
+            <div class="my-4">
+                <button onclick="renderReviewMode()" class="btn btn-primary rounded-pill px-4 me-2">Xem lại câu sai</button>
+                <button onclick="closeQuiz()" class="btn btn-outline-dark rounded-pill px-4">Đóng</button>
+            </div>
+        </div>`;
+    document.querySelector('.quiz-footer').style.display = 'none';
 }
 
-function closeQuiz() {
-    const quizModalEl = document.getElementById('quiz-modal');
-    const quizFooterEl = document.querySelector('.quiz-footer');
+// Hàm hiển thị chế độ Review
+function renderReviewMode() {
+    let reviewHTML = `<div class="review-container p-3" style="max-height: 60vh; overflow-y: auto;">
+        <h5 class="mb-4 text-primary">Chi tiết bài làm:</h5>`;
     
-    if (quizModalEl) quizModalEl.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    if (quizFooterEl) quizFooterEl.style.display = 'flex';
+    userQuizHistory.forEach((item, index) => {
+        reviewHTML += `
+            <div class="card mb-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <h6>Câu ${index + 1}: ${item.question}</h6>
+                    <p class="small mb-1">Đáp án của bạn: <span class="${item.isCorrect ? 'text-success fw-bold' : 'text-danger fw-bold'}">${item.userPick}</span></p>
+                    <p class="small mb-2 text-success">Đáp án đúng: <strong>${item.correctLabel}</strong></p>
+                    <div class="p-2 bg-light rounded small"><strong>💡 Giải thích:</strong> ${item.explanation || 'Không có.'}</div>
+                </div>
+            </div>`;
+    });
+    
+    reviewHTML += `</div><div class="text-center mt-3"><button onclick="closeQuiz()" class="btn btn-dark rounded-pill px-5">Hoàn tất</button></div>`;
+    document.getElementById('quiz-content').innerHTML = reviewHTML;
 }
 
 // === PHẦN 7: CONTACT FORM ===

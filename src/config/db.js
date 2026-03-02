@@ -13,12 +13,11 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// Test connection on startup
 pool.getConnection()
     .then(conn => {
-        console.log('✅ Kết nối Aiven MySQL thành công!');
+        console.log('Kết nối Aiven MySQL thành công!');
         conn.release();
     })
-    .catch(err => console.error('❌ Lỗi kết nối DB:', err.message));
+    .catch(err => console.error('Lỗi kết nối DB:', err.message));
 
 module.exports = pool;
