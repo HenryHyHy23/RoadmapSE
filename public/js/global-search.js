@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   let allCourseData = [];
 
-  // Trạng thái tìm kiếm hiện tại (Lưu các bước)
+  // Trạng thái tìm kiếm hiện tại
   let searchFilters = {
     subjectCode: null, // Bước 1: Mã môn
     lessonName: null, // Bước 2: Tên bài học
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .then((data) => {
       allCourseData = data;
-      renderSuggestions(); // Chạy gợi ý ngay khi có data
+      renderSuggestions();
     })
     .catch((err) => console.error("Lỗi:", err));
 
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Khi User click vào nút Gợi ý (Biến đổi global scope để gọi từ thẻ HTML)
+  // Khi User click vào nút Gợi ý
   window.applyFilter = function (type, value) {
     if (type === "subject") searchFilters.subjectCode = value;
     if (type === "lesson") searchFilters.lessonName = value;
@@ -130,7 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function executeSearch() {
-    // Nếu không có filter nào và cũng không gõ gì -> Hiện trang default
     if (
       !searchFilters.subjectCode &&
       !searchFilters.lessonName &&
@@ -148,7 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let htmlRender = "";
     let matchCount = 0;
 
+    //  băm nhỏ câu search thành mảng các chữ cái (Vd: "JPD113 Bảng" -> ["jpd113", "bảng"])
+    let searchTerms = searchFilters.keyword
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+
     allCourseData.forEach((subject) => {
+      // 1. Kiểm tra filter môn học (qua Badge click)
       if (
         searchFilters.subjectCode &&
         subject.code !== searchFilters.subjectCode
@@ -156,59 +162,61 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       if (!subject.subLessons) return;
 
-      subject.subLessons.forEach((group) => {
-        if (!group.subLessons) return;
-
-        group.subLessons.forEach((lesson) => {
-          if (
-            searchFilters.lessonName &&
-            lesson.name !== searchFilters.lessonName
-          )
+      function processLessons(lessons) {
+        lessons.forEach((item) => {
+          if (item.subLessons) {
+            processLessons(item.subLessons);
             return;
-          if (!lesson.content) return;
-
-          let parser = new DOMParser();
-          let doc = parser.parseFromString(lesson.content, "text/html");
-
-          // NẾU người dùng chưa gõ Keyword (chỉ mới chọn Badge) -> Hiện TẤT CẢ các thẻ của bài học đó
-          if (searchFilters.keyword === "") {
-            let mainBlocks = doc.querySelectorAll(".content-card");
-            mainBlocks.forEach((block) => {
-              matchCount++;
-              htmlRender += createCardTemplate(
-                subject.code,
-                lesson.name,
-                block.outerHTML,
-              );
-            });
-            return; // Xong bài này, nhảy sang bài khác
           }
 
-          // NẾU người dùng có gõ Keyword -> Quét sâu vào từng chữ
-          let blocks = doc.querySelectorAll(
-            ".content-card, .info-box, .warning-box, .success-box, .content-card *, .info-box *",
-          );
-          let addedContents = new Set();
+          // Kiểm tra filter bài học (qua Badge click)
+          if (
+            searchFilters.lessonName &&
+            item.name !== searchFilters.lessonName
+          )
+            return;
+          if (!item.content) return;
 
-          blocks.forEach((block) => {
-            if (block.innerText.toLowerCase().includes(searchFilters.keyword)) {
-              let parentBlock =
-                block.closest(
-                  ".content-card, .info-box, .warning-box, .success-box",
-                ) || block;
-              if (!addedContents.has(parentBlock.outerHTML)) {
-                matchCount++;
-                addedContents.add(parentBlock.outerHTML);
-                htmlRender += createCardTemplate(
-                  subject.code,
-                  lesson.name,
-                  parentBlock.outerHTML,
-                );
-              }
+          let parser = new DOMParser();
+          let doc = parser.parseFromString(item.content, "text/html");
+
+          let mainBlocks = doc.querySelectorAll(
+            ".content-card, .info-box, .warning-box, .success-box",
+          );
+          let blocksArray =
+            mainBlocks.length > 0 ? Array.from(mainBlocks) : [doc.body];
+
+          blocksArray.forEach((block) => {
+            //  Gộp Mã môn + Tên bài + Nội dung thành 1 chuỗi duy nhất để quét
+            let combinedText = (
+              subject.code +
+              " " +
+              item.name +
+              " " +
+              block.textContent
+            ).toLowerCase();
+
+            // Kiểm tra xem TẤT CẢ các từ khóa người dùng gõ có nằm trong chuỗi gộp này không
+            // Hàm every() sẽ tự động trả về true nếu searchTerms rỗng (lúc chưa gõ gì)
+            let isMatch = searchTerms.every((term) =>
+              combinedText.includes(term),
+            );
+
+            if (isMatch) {
+              matchCount++;
+              let contentToRender =
+                block === doc.body ? block.innerHTML : block.outerHTML;
+              htmlRender += createCardTemplate(
+                subject.code,
+                item.name,
+                contentToRender,
+              );
             }
           });
         });
-      });
+      }
+
+      processLessons(subject.subLessons);
     });
 
     // Xuất kết quả
