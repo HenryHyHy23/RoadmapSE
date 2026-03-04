@@ -2878,6 +2878,7 @@ html {
   border-radius: 50px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  white-space: nowrap !important;
 }
 
 .nav-link-btn:hover {
@@ -4068,4 +4069,24 @@ html {
   color: #0ea5e9;
   transform: rotateY(180deg);
   border: 2px solid #bae6fd;
+}
+
+#searchSuggestions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  /* Bắt buộc thẻ Flex không được phình to hơn thẻ cha */
+  min-width: 0 !important;
+}
+
+#searchSuggestions .badge {
+  /* Cho phép chữ bên trong badge tự rớt dòng nếu nó quá dài so với màn hình điện thoại */
+  white-space: normal !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  text-align: left !important;
+  line-height: 1.4 !important;
 }
