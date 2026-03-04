@@ -1,0 +1,193 @@
+[
+  {
+    "subjectId": "jpd",
+    "cards": [
+      { "front": "Watashi (私)", "back": "Tôi" },
+      { "front": "Gakusei (学生)", "back": "Học sinh / Sinh viên" },
+      { "front": "Sensei (先生)", "back": "Giáo viên" },
+      { "front": "Đếm 1 cái (🍎)", "back": "Hitotsu (ひとつ)" },
+      { "front": "Đếm 300 (💯)", "back": "Sanbyaku (さんびゃく) - Có biến âm" },
+      {
+        "front": "Đếm 1 người (🧑‍🤝‍🧑)",
+        "back": "Hitori (ひとり) - Biến âm đặc biệt"
+      },
+      {
+        "front": "Mẫu câu: Cùng làm nhé? (Rủ rê)",
+        "back": "V-masen ka (～ませんか)"
+      },
+      {
+        "front": "Đi bằng phương tiện gì?",
+        "back": "N (Phương tiện) + de + ikimasu (で いきます)"
+      },
+      { "front": "Thứ Hai", "back": "Getsuyoubi (月曜日)" },
+      {
+        "front": "Xin lỗi / Xin phép gọi người khác",
+        "back": "Sumimasen (すみません)"
+      }
+    ]
+  },
+  {
+    "subjectId": "mas",
+    "cards": [
+      {
+        "front": "Z-Test dùng khi nào?",
+        "back": "Khi n ≥ 30 HOẶC đã biết phương sai tổng thể (σ)"
+      },
+      {
+        "front": "T-Test dùng khi nào?",
+        "back": "Khi n < 30 VÀ CHƯA biết phương sai tổng thể (Tính df = n-1)"
+      },
+      {
+        "front": "Null Hypothesis (H₀) là gì?",
+        "back": "Giả thuyết không đổi, luôn chứa dấu (=, ≤, ≥)"
+      },
+      {
+        "front": "Alternative Hypothesis (H₁) là gì?",
+        "back": "Điều muốn chứng minh, chứa dấu (≠, <, >)"
+      },
+      {
+        "front": "Nếu P-value < α thì kết luận gì?",
+        "back": "Bác bỏ H₀ (Reject H₀)"
+      },
+      {
+        "front": "Mức ý nghĩa (Level of significance)",
+        "back": "Ký hiệu là α. Nếu đề không cho, mặc định α = 0.05"
+      },
+      {
+        "front": "Dữ liệu định lượng Rời rạc (Discrete)",
+        "back": "Là số liệu ĐẾM ĐƯỢC (VD: Số lượng sinh viên)"
+      },
+      {
+        "front": "Dữ liệu định lượng Liên tục (Continuous)",
+        "back": "Là số liệu ĐO ĐẠC ĐƯỢC (VD: Chiều cao 1.75m)"
+      },
+      {
+        "front": "Phân phối chuẩn (Normal Distribution)",
+        "back": "Đồ thị hình chuông, đối xứng. Mean = Median = Mode"
+      }
+    ]
+  },
+  {
+    "subjectId": "dbi",
+    "cards": [
+      {
+        "front": "Thứ tự thực thi SELECT",
+        "back": "FROM ➔ WHERE ➔ GROUP BY ➔ HAVING ➔ SELECT ➔ DISTINCT ➔ ORDER BY"
+      },
+      {
+        "front": "Lệnh DDL gồm những gì?",
+        "back": "CREATE, ALTER, DROP (Thao tác cấu trúc)"
+      },
+      {
+        "front": "Lệnh DML gồm những gì?",
+        "back": "INSERT, UPDATE, DELETE (Thao tác dữ liệu)"
+      },
+      {
+        "front": "Quan hệ 1-N (One-to-Many)",
+        "back": "Khóa ngoại (FK) nằm ở bảng N (Nhiều)"
+      },
+      {
+        "front": "Quan hệ N-N (Many-to-Many)",
+        "back": "Bắt buộc phải tạo thêm bảng trung gian (Junction table)"
+      },
+      {
+        "front": "Khóa chính (Primary Key - PK)",
+        "back": "Định danh duy nhất một bản ghi, KHÔNG được để trống (NULL)"
+      },
+      {
+        "front": "Khóa ngoại (Foreign Key - FK)",
+        "back": "Dùng để liên kết 2 bảng, giá trị phải khớp với PK của bảng tham chiếu"
+      },
+      {
+        "front": "WHERE khác HAVING thế nào?",
+        "back": "WHERE lọc dữ liệu TRƯỚC khi nhóm. HAVING lọc SAU khi đã GROUP BY"
+      },
+      {
+        "front": "Derived Attribute (Thuộc tính suy ra)",
+        "back": "Tính toán từ thuộc tính khác (VD: Tuổi từ Ngày sinh). Ký hiệu nét đứt."
+      }
+    ]
+  },
+  {
+    "subjectId": "swe",
+    "cards": [
+      {
+        "front": "Mô hình Waterfall",
+        "back": "Yêu cầu rõ ràng từ đầu, ít thay đổi. Dev xong mới Test."
+      },
+      {
+        "front": "Mô hình Agile / Scrum",
+        "back": "Yêu cầu thay đổi liên tục, khách hàng tham gia sâu. Chia nhỏ Sprint."
+      },
+      {
+        "front": "Functional Requirement",
+        "back": "Hệ thống làm gì? (Đăng nhập, Thêm giỏ hàng...)"
+      },
+      {
+        "front": "Non-Functional Requirement",
+        "back": "Hệ thống hoạt động thế nào? (Tốc độ < 2s, Bảo mật, Dễ dùng...)"
+      },
+      {
+        "front": "3 Vai trò (Roles) trong Scrum",
+        "back": "Product Owner (PO), Scrum Master (SM), Development Team"
+      },
+      {
+        "front": "Black-box Testing",
+        "back": "Kiểm thử hộp đen: Không cần biết code, chỉ nhập Input và check Output."
+      },
+      {
+        "front": "White-box Testing",
+        "back": "Kiểm thử hộp trắng: Phải biết code để test từng nhánh if/else, thuật toán."
+      },
+      {
+        "front": "<<include>> vs <<extend>>",
+        "back": "<<include>>: Bắt buộc phải có.\n<<extend>>: Tùy chọn, mở rộng thêm."
+      },
+      {
+        "front": "Regression Testing (Kiểm thử hồi quy)",
+        "back": "Test lại sau khi fix bug/thêm tính năng để chắc chắn code cũ không bị hỏng."
+      }
+    ]
+  },
+  {
+    "subjectId": "lab",
+    "cards": [
+      {
+        "front": "Mô hình MVC là gì?",
+        "back": "Model (Dữ liệu) - View (Giao diện) - Controller (Điều phối)"
+      },
+      {
+        "front": "Low Coupling",
+        "back": "Các Class / Module ít phụ thuộc vào nhau"
+      },
+      {
+        "front": "High Cohesion",
+        "back": "Mỗi hàm / Class chỉ làm duy nhất một nhiệm vụ cụ thể"
+      },
+      {
+        "front": "Regex: Bắt đầu và Kết thúc",
+        "back": "^ (Bắt đầu chuỗi) và $ (Kết thúc chuỗi)"
+      },
+      {
+        "front": "Thành phần DAO (Data Access Object)",
+        "back": "Cầu nối duy nhất để lưu trữ/đọc dữ liệu (ArrayList, Database), che giấu sự phức tạp."
+      },
+      {
+        "front": "Nhiệm vụ của Controller",
+        "back": "Nhận Input từ người dùng -> Gọi Model xử lý -> Gọi View hiển thị kết quả."
+      },
+      {
+        "front": "Regex: \\d có nghĩa là gì?",
+        "back": "Đại diện cho 1 chữ số bất kỳ (từ 0 đến 9)."
+      },
+      {
+        "front": "Regex: {n,m} có nghĩa là gì?",
+        "back": "Ký tự xuất hiện tối thiểu n lần và tối đa m lần."
+      },
+      {
+        "front": "Vì sao cần Validation?",
+        "back": "Kiểm tra dữ liệu đầu vào có hợp lệ không, tránh lỗi làm sập chương trình (Runtime error)."
+      }
+    ]
+  }
+]
