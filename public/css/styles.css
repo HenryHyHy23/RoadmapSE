@@ -4022,8 +4022,8 @@ html {
 /* --- FLASHCARD CSS --- */
 .fc-scene {
   width: 100%;
-  max-width: 900px;
-  height: 180px;
+  max-width: 750px;
+  height: 300px;
   perspective: 1000px;
   cursor: pointer;
 }

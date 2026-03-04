@@ -227,15 +227,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function createCardTemplate(subCode, lessonName, htmlContent) {
     return `
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 shadow-sm" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-                    <div class="card-header text-white d-flex align-items-center" style="background: #334155; font-size: 0.85rem; padding: 10px 15px;">
-                        <span class="badge bg-light text-dark me-2">${subCode}</span>
-                        <strong class="text-truncate">${lessonName}</strong>
+            <div class="col-md-6 mb-4 d-flex align-items-stretch">
+                <div class="card w-100 shadow-sm" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                    
+                    <div class="card-header d-flex align-items-center" style="background: #334155; padding: 12px 15px;">
+                        <span class="badge shadow-sm flex-shrink-0" style="background-color: #f97316; color: #ffffff !important; padding: 6px 12px; margin-right: 12px; font-size: 0.85rem; border-radius: 6px;">
+                            ${subCode}
+                        </span>
+                        <strong style="color: #ffffff; line-height: 1.4; white-space: normal; word-break: break-word;">
+                            ${lessonName}
+                        </strong>
                     </div>
-                    <div class="card-body" style="max-height: 350px; overflow-y: auto;">
-                        ${htmlContent}
+                    
+                    <div class="card-body custom-scrollbar" style="max-height: 350px; overflow-y: auto; overflow-x: auto; padding: 15px; background: #ffffff;">
+                        <div style="max-width: 100%; box-sizing: border-box;">
+                            ${htmlContent}
+                        </div>
                     </div>
+
                 </div>
             </div>
         `;

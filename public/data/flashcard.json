@@ -23,6 +23,34 @@
       {
         "front": "Xin lỗi / Xin phép gọi người khác",
         "back": "Sumimasen (すみません)"
+      },
+      {
+        "front": "Chào buổi sáng",
+        "back": "Ohayou gozaimasu (おはようございます)"
+      },
+      {
+        "front": "Xin cám ơn",
+        "back": "Arigatou gozaimasu (ありがとうございます)"
+      },
+      { "front": "Đại học", "back": "Daigaku (大学)" },
+      { "front": "Thứ Tư", "back": "Suiyoubi (水曜日)" },
+      {
+        "front": "Mùng 1 (Đếm ngày trong tháng)",
+        "back": "Tsuitachi (ついたち)"
+      },
+      {
+        "front": "Ngày 20 (Đếm ngày trong tháng)",
+        "back": "Hatsuka (はつか) - Biến âm đặc biệt"
+      },
+      { "front": "Động từ 'Ăn'", "back": "Tabemasu (たべます)" },
+      { "front": "Động từ 'Đi'", "back": "Ikimasu (いきます)" },
+      {
+        "front": "Trợ từ chỉ sở hữu (Của)",
+        "back": "Trợ từ 'no' (の). VD: Watashi no hon (Sách của tôi)"
+      },
+      {
+        "front": "Mẫu câu phủ định: N1 không phải là N2",
+        "back": "N1 wa N2 ja arimasen (N1 は N2 じゃありません)"
       }
     ]
   },
@@ -64,6 +92,50 @@
       {
         "front": "Phân phối chuẩn (Normal Distribution)",
         "back": "Đồ thị hình chuông, đối xứng. Mean = Median = Mode"
+      },
+      {
+        "front": "Sample (Mẫu) là gì?",
+        "back": "Là một tập hợp con được rút ra ngẫu nhiên từ Quần thể (Population) để nghiên cứu."
+      },
+      {
+        "front": "IQR (Khoảng tứ phân vị) tính thế nào?",
+        "back": "Công thức: IQR = Q3 - Q1. Dùng để đo lường độ phân tán của 50% dữ liệu ở giữa."
+      },
+      {
+        "front": "Outlier (Điểm ngoại lai) xác định thế nào?",
+        "back": "Nhỏ hơn (Q1 - 1.5*IQR) HOẶC Lớn hơn (Q3 + 1.5*IQR)"
+      },
+      {
+        "front": "Công thức Xác suất có điều kiện P(A|B)",
+        "back": "P(A|B) = P(A ∩ B) / P(B)"
+      },
+      {
+        "front": "Hai biến cố A và B ĐỘC LẬP khi nào?",
+        "back": "Khi P(A ∩ B) = P(A) * P(B)"
+      },
+      {
+        "front": "Phân phối Nhị thức (Binomial) dùng khi nào?",
+        "back": "Khi có n phép thử độc lập, và mỗi phép thử chỉ có 2 kết quả (Thành công / Thất bại)."
+      },
+      {
+        "front": "Phân phối Poisson dùng khi nào?",
+        "back": "Đếm số lần một sự kiện xảy ra trong một khoảng thời gian hoặc không gian nhất định."
+      },
+      {
+        "front": "Độ lệch chuẩn (Standard Deviation) là gì?",
+        "back": "Là căn bậc hai của Phương sai (Variance), giúp đo lường mức độ phân tán của dữ liệu."
+      },
+      {
+        "front": "Nghiên cứu quan sát (Observational Study)",
+        "back": "Người nghiên cứu chỉ quan sát dữ liệu, KHÔNG can thiệp hay tác động lên đối tượng."
+      },
+      {
+        "front": "Paired T-Test dùng khi nào?",
+        "back": "So sánh 2 mẫu PHỤ THUỘC (Ví dụ: Đo điểm của 1 nhóm học sinh TRƯỚC và SAU khi học thêm)."
+      },
+      {
+        "front": "Bậc tự do (df) của T-Test 1 mẫu",
+        "back": "df = n - 1 (Với n là kích thước mẫu)"
       }
     ]
   },
@@ -76,7 +148,7 @@
       },
       {
         "front": "Lệnh DDL gồm những gì?",
-        "back": "CREATE, ALTER, DROP (Thao tác cấu trúc)"
+        "back": "CREATE, ALTER, DROP (Thao tác khung/cấu trúc)"
       },
       {
         "front": "Lệnh DML gồm những gì?",
@@ -84,27 +156,71 @@
       },
       {
         "front": "Quan hệ 1-N (One-to-Many)",
-        "back": "Khóa ngoại (FK) nằm ở bảng N (Nhiều)"
+        "back": "Khóa ngoại (FK) luôn phải nằm ở bảng N (Bảng nhiều)"
       },
       {
         "front": "Quan hệ N-N (Many-to-Many)",
-        "back": "Bắt buộc phải tạo thêm bảng trung gian (Junction table)"
+        "back": "Bắt buộc phải tạo thêm bảng trung gian (Junction table) để nối 2 bảng."
       },
       {
         "front": "Khóa chính (Primary Key - PK)",
-        "back": "Định danh duy nhất một bản ghi, KHÔNG được để trống (NULL)"
+        "back": "Định danh duy nhất một bản ghi. Ràng buộc: UNIQUE và NOT NULL."
       },
       {
         "front": "Khóa ngoại (Foreign Key - FK)",
-        "back": "Dùng để liên kết 2 bảng, giá trị phải khớp với PK của bảng tham chiếu"
+        "back": "Dùng để liên kết 2 bảng. Giá trị của FK phải tồn tại trong PK của bảng gốc."
       },
       {
         "front": "WHERE khác HAVING thế nào?",
-        "back": "WHERE lọc dữ liệu TRƯỚC khi nhóm. HAVING lọc SAU khi đã GROUP BY"
+        "back": "WHERE lọc dữ liệu TRƯỚC khi nhóm. HAVING lọc dữ liệu SAU khi đã dùng GROUP BY."
       },
       {
         "front": "Derived Attribute (Thuộc tính suy ra)",
-        "back": "Tính toán từ thuộc tính khác (VD: Tuổi từ Ngày sinh). Ký hiệu nét đứt."
+        "back": "Được tính toán từ thuộc tính khác (VD: Tuổi tính từ Ngày sinh). Ký hiệu: Hình Oval nét đứt."
+      },
+      {
+        "front": "Weak Entity (Thực thể yếu)",
+        "back": "Không thể tự tồn tại độc lập, phải dựa vào thực thể khác. Ký hiệu: Hình chữ nhật nét đôi."
+      },
+      {
+        "front": "Multivalued Attribute (Thuộc tính đa trị)",
+        "back": "Có thể chứa nhiều giá trị (VD: Bảng có nhiều số điện thoại). Ký hiệu: Hình Oval nét đôi."
+      },
+      {
+        "front": "INNER JOIN là gì?",
+        "back": "Chỉ lấy các bản ghi có sự khớp nhau (matching) ở CẢ 2 BẢNG."
+      },
+      {
+        "front": "LEFT JOIN là gì?",
+        "back": "Lấy TẤT CẢ bản ghi ở bảng BÊN TRÁI, và chỉ lấy bản ghi khớp ở bảng BÊN PHẢI."
+      },
+      {
+        "front": "GROUP BY làm nhiệm vụ gì?",
+        "back": "Gom nhóm các dòng có chung giá trị để tính toán (SUM, COUNT, MAX, MIN, AVG)."
+      },
+      {
+        "front": "Ràng buộc UNIQUE khác PK thế nào?",
+        "back": "UNIQUE cho phép tồn tại 1 giá trị NULL, còn Primary Key thì tuyệt đối không."
+      },
+      {
+        "front": "Lệnh TRUNCATE TABLE làm gì?",
+        "back": "Xóa sạch dữ liệu trong bảng và reset lại Identity về 0. Chạy nhanh hơn DELETE."
+      },
+      {
+        "front": "Mệnh đề LIKE dùng để làm gì?",
+        "back": "Tìm kiếm chuỗi theo mẫu. Ví dụ: LIKE '%A' (Tìm tên kết thúc bằng chữ A)."
+      },
+      {
+        "front": "Ký hiệu % và _ trong toán tử LIKE",
+        "back": "%: Đại diện cho 0 hoặc nhiều ký tự.\n_: Đại diện cho ĐÚNG 1 ký tự."
+      },
+      {
+        "front": "IDENTITY(1,1) trong SQL Server",
+        "back": "Tự động tăng giá trị của cột lên 1 đơn vị mỗi khi có dòng mới được thêm vào."
+      },
+      {
+        "front": "Composite Attribute (Thuộc tính phức hợp)",
+        "back": "Thuộc tính có thể chia nhỏ (VD: Địa chỉ chia thành Số nhà, Phường, Quận). Ký hiệu: Hình Oval phân nhánh."
       }
     ]
   },
@@ -113,39 +229,83 @@
     "cards": [
       {
         "front": "Mô hình Waterfall",
-        "back": "Yêu cầu rõ ràng từ đầu, ít thay đổi. Dev xong mới Test."
+        "back": "Yêu cầu rõ ràng từ đầu, ít thay đổi. Làm xong giai đoạn này mới sang giai đoạn sau."
       },
       {
         "front": "Mô hình Agile / Scrum",
-        "back": "Yêu cầu thay đổi liên tục, khách hàng tham gia sâu. Chia nhỏ Sprint."
+        "back": "Yêu cầu thay đổi liên tục, khách hàng tham gia sâu. Chia nhỏ dự án thành các Sprint."
       },
       {
         "front": "Functional Requirement",
-        "back": "Hệ thống làm gì? (Đăng nhập, Thêm giỏ hàng...)"
+        "back": "Hệ thống LÀM GÌ? (Hành vi cụ thể như: Đăng nhập, Thêm giỏ hàng, Thanh toán...)"
       },
       {
         "front": "Non-Functional Requirement",
-        "back": "Hệ thống hoạt động thế nào? (Tốc độ < 2s, Bảo mật, Dễ dùng...)"
+        "back": "Hệ thống HOẠT ĐỘNG THẾ NÀO? (Ràng buộc như: Tốc độ < 2s, Bảo mật SHA-256, Dễ dùng...)"
       },
       {
         "front": "3 Vai trò (Roles) trong Scrum",
-        "back": "Product Owner (PO), Scrum Master (SM), Development Team"
+        "back": "1. Product Owner (PO)\n2. Scrum Master (SM)\n3. Development Team"
       },
       {
         "front": "Black-box Testing",
-        "back": "Kiểm thử hộp đen: Không cần biết code, chỉ nhập Input và check Output."
+        "back": "Kiểm thử hộp đen: Tester KHÔNG cần biết code, chỉ nhập Input và kiểm tra Output."
       },
       {
         "front": "White-box Testing",
-        "back": "Kiểm thử hộp trắng: Phải biết code để test từng nhánh if/else, thuật toán."
+        "back": "Kiểm thử hộp trắng: Cần biết rành về code để test từng nhánh thuật toán, if/else, vòng lặp."
       },
       {
-        "front": "<<include>> vs <<extend>>",
-        "back": "<<include>>: Bắt buộc phải có.\n<<extend>>: Tùy chọn, mở rộng thêm."
+        "front": "<<include>> vs <<extend>> (Use Case)",
+        "back": "<<include>>: Bắt buộc phải thực hiện.\n<<extend>>: Tùy chọn, chỉ xảy ra khi đủ điều kiện."
       },
       {
         "front": "Regression Testing (Kiểm thử hồi quy)",
-        "back": "Test lại sau khi fix bug/thêm tính năng để chắc chắn code cũ không bị hỏng."
+        "back": "Test lại hệ thống sau khi Dev fix bug/thêm tính năng, để chắc chắn code cũ không bị hỏng."
+      },
+      {
+        "front": "4 Mức độ kiểm thử (Test Levels)",
+        "back": "1. Unit Testing (Đơn vị)\n2. Integration Testing (Tích hợp)\n3. System Testing (Hệ thống)\n4. Acceptance Testing (Chấp nhận)"
+      },
+      {
+        "front": "Acceptance Testing (UAT) do ai làm?",
+        "back": "Do Khách hàng (Client/End-user) làm để quyết định có thanh toán và nhận phần mềm hay không."
+      },
+      {
+        "front": "Sprint Planning là gì?",
+        "back": "Cuộc họp đầu Sprint để team chốt xem sẽ hoàn thành những tính năng nào trong Sprint này."
+      },
+      {
+        "front": "Daily Scrum kéo dài bao lâu?",
+        "back": "Họp đứng hàng ngày, tối đa 15 phút để cập nhật tiến độ và nêu khó khăn."
+      },
+      {
+        "front": "Sprint Retrospective là gì?",
+        "back": "Cuộc họp cuối Sprint để team rút kinh nghiệm nội bộ (Cái gì tốt, cái gì cần sửa cho Sprint sau)."
+      },
+      {
+        "front": "Composition (Cấu thành) trong Class Diagram",
+        "back": "Quan hệ PART-OF (Chặt chẽ). Đối tượng cha bị hủy thì con chết theo (Nhà ➔ Phòng). Ký hiệu: Hình thoi đen."
+      },
+      {
+        "front": "Aggregation (Tập hợp) trong Class Diagram",
+        "back": "Quan hệ HAS-A (Lỏng lẻo). Cha hủy thì con vẫn tồn tại (Trường ➔ Sinh viên). Ký hiệu: Hình thoi rỗng."
+      },
+      {
+        "front": "Actor trong Use Case Diagram",
+        "back": "Đại diện cho Người dùng hoặc một Hệ thống bên ngoài có tương tác với ứng dụng của chúng ta."
+      },
+      {
+        "front": "Cấu trúc User Story chuẩn (Agile)",
+        "back": "As a [Role - Ai], I want to [Action - Làm gì] so that [Value - Để đạt lợi ích gì]."
+      },
+      {
+        "front": "Kiến trúc Layered Architecture",
+        "back": "Chia phần mềm thành nhiều tầng (UI, Logic, Database). Tầng trên chỉ được gọi tầng ngay sát dưới nó."
+      },
+      {
+        "front": "Đánh giá Rủi ro (Risk Assessment) dựa trên gì?",
+        "back": "Dựa trên 2 trục: Probability (Xác suất xảy ra) và Impact (Mức độ phá hoại)."
       }
     ]
   },
@@ -154,27 +314,27 @@
     "cards": [
       {
         "front": "Mô hình MVC là gì?",
-        "back": "Model (Dữ liệu) - View (Giao diện) - Controller (Điều phối)"
+        "back": "Model (Dữ liệu/Logic) - View (Giao diện hiển thị) - Controller (Điều phối/Xử lý sự kiện)"
       },
       {
         "front": "Low Coupling",
-        "back": "Các Class / Module ít phụ thuộc vào nhau"
+        "back": "Mức độ phụ thuộc thấp: Các Class / Module ít liên kết chặt chẽ với nhau, dễ dàng sửa đổi."
       },
       {
         "front": "High Cohesion",
-        "back": "Mỗi hàm / Class chỉ làm duy nhất một nhiệm vụ cụ thể"
+        "back": "Mức độ gắn kết cao: Mỗi Class / Hàm chỉ nên tập trung làm duy nhất một nhiệm vụ cụ thể."
       },
       {
-        "front": "Regex: Bắt đầu và Kết thúc",
-        "back": "^ (Bắt đầu chuỗi) và $ (Kết thúc chuỗi)"
+        "front": "Regex: ^ và $",
+        "back": "^ (Dấu mũ): Bắt đầu chuỗi.\n$ (Đô la): Kết thúc chuỗi."
       },
       {
         "front": "Thành phần DAO (Data Access Object)",
-        "back": "Cầu nối duy nhất để lưu trữ/đọc dữ liệu (ArrayList, Database), che giấu sự phức tạp."
+        "back": "Cầu nối duy nhất để đọc/ghi dữ liệu (xuống Database hoặc List), giúp che giấu sự phức tạp cho Controller."
       },
       {
         "front": "Nhiệm vụ của Controller",
-        "back": "Nhận Input từ người dùng -> Gọi Model xử lý -> Gọi View hiển thị kết quả."
+        "back": "Nhận Input từ View ➔ Gọi Model xử lý ➔ Trả kết quả lại cho View hiển thị."
       },
       {
         "front": "Regex: \\d có nghĩa là gì?",
@@ -182,11 +342,140 @@
       },
       {
         "front": "Regex: {n,m} có nghĩa là gì?",
-        "back": "Ký tự xuất hiện tối thiểu n lần và tối đa m lần."
+        "back": "Ký tự/Cụm đứng trước nó xuất hiện tối thiểu n lần và tối đa m lần."
       },
       {
         "front": "Vì sao cần Validation?",
-        "back": "Kiểm tra dữ liệu đầu vào có hợp lệ không, tránh lỗi làm sập chương trình (Runtime error)."
+        "back": "Để kiểm tra dữ liệu đầu vào có hợp lệ không (chống hack, chống lỗi), tránh làm sập chương trình lúc Runtime."
+      },
+      {
+        "front": "4 Tính chất cốt lõi của OOP",
+        "back": "1. Đóng gói (Encapsulation)\n2. Kế thừa (Inheritance)\n3. Đa hình (Polymorphism)\n4. Trừu tượng (Abstraction)"
+      },
+      {
+        "front": "Tính Đóng gói (Encapsulation)",
+        "back": "Bảo vệ dữ liệu bằng cách set 'private' cho thuộc tính và chỉ cho phép truy cập qua hàm 'getter/setter'."
+      },
+      {
+        "front": "Tính Kế thừa dùng từ khóa gì?",
+        "back": "Dùng 'extends' (để kế thừa Class) hoặc 'implements' (để kế thừa Interface)."
+      },
+      {
+        "front": "Tính Đa hình (Polymorphism)",
+        "back": "Hiện tượng một phương thức có thể có nhiều cách thực hiện khác nhau (Method Overriding / Overloading)."
+      },
+      {
+        "front": "ArrayList khác Array thông thường thế nào?",
+        "back": "ArrayList là mảng động (Dynamic size), tự động co giãn khi thêm/xóa phần tử. Array thường có kích thước cố định."
+      },
+      {
+        "front": "HashMap lưu dữ liệu dạng gì?",
+        "back": "Lưu theo cặp Key - Value (Khóa - Giá trị). Khóa (Key) là duy nhất không được trùng."
+      },
+      {
+        "front": "HashSet có đặc điểm gì nổi bật?",
+        "back": "Tuyệt đối không chứa các phần tử trùng lặp (Unique) và các phần tử không được sắp xếp theo thứ tự."
+      },
+      {
+        "front": "Regex: [a-zA-Z] có ý nghĩa gì?",
+        "back": "Khớp với MỘT chữ cái bất kỳ, bất kể là viết hoa hay viết thường."
+      },
+      {
+        "front": "Lỗi trôi lệnh (Scanner skipping) khi nhập liệu",
+        "back": "Xảy ra khi dùng nextInt/nextDouble rồi gọi ngay nextLine. Cách fix: Chèn thêm 1 lệnh nextLine() ảo vào giữa."
+      },
+      {
+        "front": "Regex: Dấu chấm (.)",
+        "back": "Đại diện cho MỘT ký tự bất kỳ (chữ, số, ký tự đặc biệt...), ngoại trừ ký tự xuống dòng."
+      },
+      {
+        "front": "Nhiệm vụ của View trong Console App (LAB211)",
+        "back": "In ra các Menu chức năng (System.out.print) và thông báo kết quả cho người dùng nhìn thấy."
+      }
+    ]
+  },
+  {
+    "subjectId": "swe",
+    "cards": [
+      {
+        "front": "Mô hình Waterfall",
+        "back": "Yêu cầu rõ ràng từ đầu, ít thay đổi. Làm xong giai đoạn này mới sang giai đoạn sau."
+      },
+      {
+        "front": "Mô hình Agile / Scrum",
+        "back": "Yêu cầu thay đổi liên tục, khách hàng tham gia sâu. Chia nhỏ dự án thành các Sprint."
+      },
+      {
+        "front": "Functional Requirement",
+        "back": "Hệ thống LÀM GÌ? (Hành vi cụ thể như: Đăng nhập, Thêm giỏ hàng, Thanh toán...)"
+      },
+      {
+        "front": "Non-Functional Requirement",
+        "back": "Hệ thống HOẠT ĐỘNG THẾ NÀO? (Ràng buộc như: Tốc độ < 2s, Bảo mật SHA-256, Dễ dùng...)"
+      },
+      {
+        "front": "3 Vai trò (Roles) trong Scrum",
+        "back": "1. Product Owner (PO)\n2. Scrum Master (SM)\n3. Development Team"
+      },
+      {
+        "front": "Black-box Testing",
+        "back": "Kiểm thử hộp đen: Tester KHÔNG cần biết code, chỉ nhập Input và kiểm tra Output."
+      },
+      {
+        "front": "White-box Testing",
+        "back": "Kiểm thử hộp trắng: Cần biết rành về code để test từng nhánh thuật toán, if/else, vòng lặp."
+      },
+      {
+        "front": "<<include>> vs <<extend>> (Use Case)",
+        "back": "<<include>>: Bắt buộc phải thực hiện.\n<<extend>>: Tùy chọn, chỉ xảy ra khi đủ điều kiện."
+      },
+      {
+        "front": "Regression Testing (Kiểm thử hồi quy)",
+        "back": "Test lại hệ thống sau khi Dev fix bug/thêm tính năng, để chắc chắn code cũ không bị hỏng."
+      },
+      {
+        "front": "4 Mức độ kiểm thử (Test Levels)",
+        "back": "1. Unit Testing (Đơn vị)\n2. Integration Testing (Tích hợp)\n3. System Testing (Hệ thống)\n4. Acceptance Testing (Chấp nhận)"
+      },
+      {
+        "front": "Acceptance Testing (UAT) do ai làm?",
+        "back": "Do Khách hàng (Client/End-user) làm để quyết định có thanh toán và nhận phần mềm hay không."
+      },
+      {
+        "front": "Sprint Planning là gì?",
+        "back": "Cuộc họp đầu Sprint để team chốt xem sẽ hoàn thành những tính năng nào trong Sprint này."
+      },
+      {
+        "front": "Daily Scrum kéo dài bao lâu?",
+        "back": "Họp đứng hàng ngày, tối đa 15 phút để cập nhật tiến độ và nêu khó khăn."
+      },
+      {
+        "front": "Sprint Retrospective là gì?",
+        "back": "Cuộc họp cuối Sprint để team rút kinh nghiệm nội bộ (Cái gì tốt, cái gì cần sửa cho Sprint sau)."
+      },
+      {
+        "front": "Composition (Cấu thành) trong Class Diagram",
+        "back": "Quan hệ PART-OF (Chặt chẽ). Đối tượng cha bị hủy thì con chết theo (Nhà ➔ Phòng). Ký hiệu: Hình thoi đen."
+      },
+      {
+        "front": "Aggregation (Tập hợp) trong Class Diagram",
+        "back": "Quan hệ HAS-A (Lỏng lẻo). Cha hủy thì con vẫn tồn tại (Trường ➔ Sinh viên). Ký hiệu: Hình thoi rỗng."
+      },
+      {
+        "front": "Actor trong Use Case Diagram",
+        "back": "Đại diện cho Người dùng hoặc một Hệ thống bên ngoài có tương tác với ứng dụng của chúng ta."
+      },
+      {
+        "front": "Cấu trúc User Story chuẩn (Agile)",
+        "back": "As a [Role - Ai], I want to [Action - Làm gì] so that [Value - Để đạt lợi ích gì]."
+      },
+      {
+        "front": "Kiến trúc Layered Architecture",
+        "back": "Chia phần mềm thành nhiều tầng (UI, Logic, Database). Tầng trên chỉ được gọi tầng ngay sát dưới nó."
+      },
+      {
+        "front": "Đánh giá Rủi ro (Risk Assessment) dựa trên gì?",
+        "back": "Dựa trên 2 trục: Probability (Xác suất xảy ra) và Impact (Mức độ phá hoại)."
       }
     ]
   }

@@ -347,9 +347,9 @@ async function fetchQuestions(categoryCode) {
   document.getElementById("quiz-modal").style.display = "flex";
   document.body.style.overflow = "hidden";
 
-  // Kiểm tra có tiến trình đang dở không
-  const saved = loadQuizProgress();
-  if (saved && saved.category === categoryCode) {
+  // Kiểm tra riêng tiến trình dở dang của MÔN NÀY
+  const saved = loadQuizProgress(categoryCode);
+  if (saved) {
     const resume = confirm(
       `Bạn đang làm dở Quiz ${categoryCode} ở câu ${saved.currentIdx + 1}. Tiếp tục không?`,
     );
@@ -361,7 +361,7 @@ async function fetchQuestions(categoryCode) {
       loadQuestion();
       return;
     } else {
-      clearQuizProgress();
+      clearQuizProgress(categoryCode);
     }
   }
 
@@ -454,7 +454,7 @@ function nextQuestion() {
     saveQuizProgress();
     loadQuestion();
   } else {
-    clearQuizProgress();
+    clearQuizProgress(currentCategory);
     showResult();
   }
 }
@@ -489,33 +489,59 @@ function selectAnswer(userPick) {
     document.getElementById("explanation").style.display = "block";
   }
 }
-// Lưu tiến trình
+// Lưu tiến trình (Hỗ trợ lưu nhiều môn độc lập)
 function saveQuizProgress() {
-  if (questions.length === 0) return;
-  const progress = {
+  if (questions.length === 0 || currentIdx >= questions.length) return;
+
+  // Lấy cuốn sổ cũ ra (nếu có), không có thì tạo mới {}
+  const allProgress = JSON.parse(
+    localStorage.getItem("roadmap_quiz_progress") || "{}",
+  );
+
+  // Lưu trang mới cho môn hiện tại
+  allProgress[currentCategory] = {
     category: currentCategory,
     questions: questions,
     currentIdx: currentIdx,
     score: score,
     userQuizHistory: userQuizHistory,
+    lastUpdated: Date.now(), // Đánh dấu thời gian để biết môn nào làm gần nhất
   };
-  localStorage.setItem("quiz_progress", JSON.stringify(progress));
+  localStorage.setItem("roadmap_quiz_progress", JSON.stringify(allProgress));
 }
 
-// Load tiến trình
-function loadQuizProgress() {
+// Load tiến trình (Lấy theo môn, hoặc lấy tất cả)
+function loadQuizProgress(categoryCode = null) {
   try {
-    const saved = localStorage.getItem("quiz_progress");
-    return saved ? JSON.parse(saved) : null;
+    const allProgress = JSON.parse(
+      localStorage.getItem("roadmap_quiz_progress") || "{}",
+    );
+    if (categoryCode) {
+      return allProgress[categoryCode] || null; // Lấy đúng môn đang hỏi
+    }
+    return allProgress;
   } catch {
     return null;
   }
 }
 
-// Xóa tiến trình khi hoàn thành
-function clearQuizProgress() {
-  localStorage.removeItem("quiz_progress");
+// Xóa tiến trình của một môn cụ thể khi hoàn thành
+function clearQuizProgress(categoryCode) {
+  const allProgress = JSON.parse(
+    localStorage.getItem("roadmap_quiz_progress") || "{}",
+  );
+  if (categoryCode && allProgress[categoryCode]) {
+    delete allProgress[categoryCode];
+    localStorage.setItem("roadmap_quiz_progress", JSON.stringify(allProgress));
+  }
 }
+
+// LƯU TỰ ĐỘNG KHI F5 HOẶC ĐÓNG TAB
+window.addEventListener("beforeunload", function () {
+  if (questions.length > 0 && currentIdx < questions.length) {
+    saveQuizProgress();
+  }
+});
 
 function showResult() {
   if (typeof stopQuizTimer === "function") stopQuizTimer();
@@ -747,10 +773,21 @@ if (contactForm) {
     }
   });
 }
-
+//  Phần 8: Thông báo nhắc nhở làm quiz
 document.addEventListener("DOMContentLoaded", function () {
-  const saved = loadQuizProgress();
-  if (!saved) return;
+  const allSaved = loadQuizProgress();
+  if (!allSaved || Object.keys(allSaved).length === 0) return;
+
+  // Tìm môn học được làm gần đây nhất
+  let mostRecent = null;
+  for (const key in allSaved) {
+    if (!mostRecent || allSaved[key].lastUpdated > mostRecent.lastUpdated) {
+      mostRecent = allSaved[key];
+    }
+  }
+
+  if (!mostRecent) return;
+  const saved = mostRecent;
 
   const banner = document.createElement("div");
   banner.id = "resume-banner";
@@ -764,20 +801,19 @@ document.addEventListener("DOMContentLoaded", function () {
         <p class="mb-2 fw-bold">📝 Quiz đang dở!</p>
         <p class="mb-3 text-muted small">Bạn đang làm <strong>${saved.category}</strong> - Câu ${saved.currentIdx + 1}/${saved.questions.length}</p>
         <div class="d-flex gap-2">
-            <button onclick="resumeQuiz()" class="btn btn-primary btn-sm rounded-pill px-3">Tiếp tục</button>
-            <button onclick="dismissResume()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Bỏ qua</button>
+            <button onclick="resumeQuiz('${saved.category}')" class="btn btn-primary btn-sm rounded-pill px-3">Tiếp tục</button>
+            <button onclick="dismissResume('${saved.category}')" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Bỏ qua</button>
         </div>
     `;
   document.body.appendChild(banner);
 });
 
-function resumeQuiz() {
-  const saved = loadQuizProgress();
+function resumeQuiz(category) {
+  const saved = loadQuizProgress(category);
   if (!saved) return;
 
   document.getElementById("resume-banner")?.remove();
 
-  // Restore state
   questions = saved.questions;
   currentIdx = saved.currentIdx;
   score = saved.score;
@@ -788,12 +824,14 @@ function resumeQuiz() {
     "Quiz: " + saved.category;
   document.getElementById("quiz-modal").style.display = "flex";
   document.body.style.overflow = "hidden";
-  document.querySelector(".quiz-footer").style.display = "";
+
+  const footer = document.querySelector(".quiz-footer");
+  if (footer) footer.style.display = "";
 
   loadQuestion();
 }
 
-function dismissResume() {
-  clearQuizProgress();
+function dismissResume(category) {
+  clearQuizProgress(category);
   document.getElementById("resume-banner")?.remove();
 }
