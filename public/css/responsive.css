@@ -2000,3 +2000,104 @@ img {
     line-height: 1.4;
   }
 }
+
+/* ==========================================
+   FIX LỖI TRÀN NỘI DUNG TRONG TRANG HỌC TẬP (MOBILE)
+   ========================================== */
+@media (max-width: 767px) {
+  /* 1. Xử lý Bảng (Table) bị đâm thủng lề: Ép cuộn ngang tự do bên trong thẻ */
+  .card-content .data-table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-collapse: collapse;
+  }
+
+  .data-table th,
+  .data-table td {
+    white-space: nowrap !important; /* Không cho chữ rớt dòng nát bét, bắt phải cuộn ngang */
+    padding: 8px !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* 2. Xử lý khối Code SQL bị tràn */
+  .sql-code {
+    overflow-x: auto !important;
+    white-space: pre-wrap !important; /* Tự động rớt dòng nếu code quá dài */
+    word-wrap: break-word !important;
+    font-size: 0.8rem !important; /* Chữ code thu nhỏ lại 1 chút */
+    padding: 10px !important;
+  }
+
+  /* 3. Xử lý lưới sơ đồ Chen's Notation (Phá bỏ luật min 280px) */
+  .card-content > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important; /* Ép tất cả các hình xếp dọc 1 hàng */
+    gap: 12px !important;
+  }
+
+  /* 4. Xử lý các mô hình quan hệ (1-1, 1-N) đang bị fix cứng chiều dài */
+  .card-content > div[style*="display: flex"] {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* 5. Gọt dũa lại Card nội dung cho thanh thoát hơn */
+  .content-card {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .card-title {
+    font-size: 1.1rem !important;
+  }
+
+  /* 6. Cho phép chữ trong các badge hướng dẫn tự rớt dòng */
+  .command-badge {
+    font-size: 0.8rem !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+}
+
+/* ==========================================
+   FIX LỖI CÔNG THỨC TOÁN HỌC (MATHJAX) TRÀN MÀN HÌNH
+   ========================================== */
+@media (max-width: 767px) {
+  /* 1. Thu nhỏ tổng thể kích thước công thức trên điện thoại */
+  mjx-container {
+    font-size: 85% !important; /* Giảm xuống 85% so với bình thường */
+  }
+
+  /* 2. Ép các công thức quá dài có thanh cuộn ngang độc lập */
+  mjx-container[jax="CHTML"] {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    /* Giúp vuốt mượt mà trên màn hình cảm ứng (iPhone/Android) */
+    -webkit-overflow-scrolling: touch;
+    /* Đẩy nhẹ lên để thanh cuộn (nếu hiện) không đè vào công thức */
+    padding-bottom: 4px !important;
+  }
+
+  /* 3. Xử lý các thẻ list (li) chứa công thức dài để không bị đâm thủng lề */
+  .card-content ul li {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px; /* Tránh sát chữ quá */
+  }
+
+  /* Ẩn thanh cuộn xấu xí trên giao diện Mobile (chỉ vuốt) */
+  .card-content ul li::-webkit-scrollbar,
+  mjx-container::-webkit-scrollbar {
+    height: 3px;
+  }
+  .card-content ul li::-webkit-scrollbar-thumb,
+  mjx-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 10px;
+  }
+}
