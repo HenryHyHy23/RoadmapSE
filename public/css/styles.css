@@ -406,8 +406,6 @@ body {
   font-size: 26px;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
-
 .team-row-fixed .col {
   flex: 0 0 20%;
   max-width: 20%;
@@ -623,6 +621,26 @@ footer {
 
 .navbar.sticky-top {
   z-index: 1050;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body,
+  .floating-shape,
+  .feature-card,
+  .stats-box,
+  .team-member,
+  .team-avatar,
+  .social-link,
+  .fc-card,
+  .option-btn,
+  #next-btn {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 *,

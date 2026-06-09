@@ -1,41 +1,124 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // === PHẦN 1: DOWNLOAD BUTTON  ===
   const downloadBtn = document.getElementById("btn-download-dynamic");
   const timelineItems = document.querySelectorAll(".timeline-item");
 
-  if (downloadBtn && timelineItems.length > 0) {
-    function updateDownloadLink(item) {
-      const fileLink = item.getAttribute("data-file");
+  if (!downloadBtn || timelineItems.length === 0) {
+    return;
+  }
 
-      if (fileLink) {
-        downloadBtn.setAttribute("href", fileLink);
-        downloadBtn.classList.remove("disabled");
-        downloadBtn.innerHTML =
-          '<div class="d-inline-block bi bi-download me-2"></div> Download Material';
-      } else {
-        downloadBtn.setAttribute("href", "#");
-        downloadBtn.classList.add("disabled");
-        downloadBtn.innerHTML =
-          '<div class="d-inline-block bi bi-x-circle me-2"></div> No Material';
-      }
+  function updateDownloadLink(item) {
+    const fileLink = item.getAttribute("data-file");
+
+    if (fileLink) {
+      downloadBtn.setAttribute("href", fileLink);
+      downloadBtn.classList.remove("disabled");
+      downloadBtn.innerHTML =
+        '<div class="d-inline-block bi bi-download me-2"></div> Download Material';
+      return;
     }
 
-    timelineItems.forEach((item) => {
-      item.addEventListener("click", function () {
-        updateDownloadLink(this);
-      });
+    downloadBtn.setAttribute("href", "#");
+    downloadBtn.classList.add("disabled");
+    downloadBtn.innerHTML =
+      '<div class="d-inline-block bi bi-x-circle me-2"></div> No Material';
+  }
+
+  timelineItems.forEach((item) => {
+    item.addEventListener("click", function () {
+      updateDownloadLink(this);
     });
+  });
 
-    const activeItem = document.querySelector(".timeline-item.active");
-    if (activeItem) {
-      updateDownloadLink(activeItem);
-    }
+  const activeItem = document.querySelector(".timeline-item.active");
+  if (activeItem) {
+    updateDownloadLink(activeItem);
   }
 });
 
 let subjectsData = [];
+const subjectContentCache = new Map();
+let mathJaxLoader = null;
 
-// === PHẦN 2: LOAD SUBJECTS ===
+function buildLessonButtons(subject) {
+  let html = "";
+
+  (subject.subLessons || []).forEach((sub) => {
+    if (sub.subLessons && sub.subLessons.length > 0) {
+      html += `<div class="fw-bold mt-2 mb-1 text-primary small"><i class="bi ${sub.icon} me-2"></i>${sub.name}</div>`;
+      sub.subLessons.forEach((child) => {
+        html += `
+                                <button class="btn btn-sub-lesson bg-white text-start btn-view-lesson ms-3 mb-1 border-light shadow-sm" 
+                                        data-content-id="${subject.id}-${child.type}">
+                                    <i class="bi ${child.icon || "bi-dot"} me-2"></i>${child.name}
+                                </button>`;
+      });
+      return;
+    }
+
+    html += `
+                            <button class="btn btn-sub-lesson bg-white text-start btn-view-lesson mb-1 shadow-sm" 
+                                    data-content-id="${subject.id}-${sub.type}">
+                                <i class="bi ${sub.icon} me-2"></i>${sub.name}
+                            </button>`;
+  });
+
+  return html;
+}
+
+async function ensureSubjectContentLoaded(subjectId) {
+  if (subjectContentCache.has(subjectId)) {
+    return subjectContentCache.get(subjectId);
+  }
+
+  const response = await fetch(`/api/subjects/${subjectId}`);
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Không tải được nội dung môn học");
+  }
+
+  subjectContentCache.set(subjectId, result.data);
+  subjectsData = subjectsData.map((subject) =>
+    subject.id === subjectId ? result.data : subject,
+  );
+
+  return result.data;
+}
+
+function lessonMayContainMath(content = "") {
+  return /\\\(|\\\[|\\begin\{/.test(content);
+}
+
+function ensureMathJaxLoaded() {
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    return Promise.resolve(window.MathJax);
+  }
+
+  if (mathJaxLoader) {
+    return mathJaxLoader;
+  }
+
+  window.MathJax = {
+    tex: {
+      inlineMath: [["\\(", "\\)"]],
+      displayMath: [["\\[", "\\]"]],
+    },
+  };
+
+  mathJaxLoader = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.id = "MathJax-script";
+    script.src =
+      "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+    script.async = true;
+    script.onload = () => resolve(window.MathJax);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  return mathJaxLoader;
+}
+
 async function loadSubjectsFromJSON() {
   const menuContainer = document.getElementById("v-pills-tab");
   const contentContainer = document.getElementById("v-pills-tabContent");
@@ -47,20 +130,24 @@ async function loadSubjectsFromJSON() {
   try {
     const response = await fetch("/api/subjects");
     const result = await response.json();
-    const data = result.data;
-    subjectsData = data;
+    const data = result.data || [];
     const downloadBtn = document.getElementById("btn-download-dynamic");
 
+    subjectsData = data;
+    subjectContentCache.clear();
     menuContainer.innerHTML = "";
     contentContainer.innerHTML = "";
 
     data.forEach((subject, index) => {
       const isActive = index === 0 ? "active" : "";
+      const isShowActive = index === 0 ? "show active" : "";
       const menuItem = document.createElement("a");
+
       menuItem.className = `timeline-item list-group-item-action ${isActive}`;
       menuItem.id = `tab-${subject.id}`;
       menuItem.setAttribute("data-bs-toggle", "pill");
       menuItem.setAttribute("data-bs-target", `#content-${subject.id}`);
+      menuItem.setAttribute("data-file", subject.file || "");
       menuItem.setAttribute("role", "tab");
 
       menuItem.addEventListener("click", function () {
@@ -81,29 +168,6 @@ async function loadSubjectsFromJSON() {
                 </div>`;
       menuContainer.appendChild(menuItem);
 
-      let subButtonsHTML = "";
-      if (subject.subLessons) {
-        subject.subLessons.forEach((sub) => {
-          if (sub.subLessons && sub.subLessons.length > 0) {
-            subButtonsHTML += `<div class="fw-bold mt-2 mb-1 text-primary small"><i class="bi ${sub.icon} me-2"></i>${sub.name}</div>`;
-            sub.subLessons.forEach((child) => {
-              subButtonsHTML += `
-                                <button class="btn btn-sub-lesson bg-white text-start btn-view-lesson ms-3 mb-1 border-light shadow-sm" 
-                                        data-content-id="${subject.id}-${child.type}">
-                                    <i class="bi ${child.icon || "bi-dot"} me-2"></i>${child.name}
-                                </button>`;
-            });
-          } else {
-            subButtonsHTML += `
-                            <button class="btn btn-sub-lesson bg-white text-start btn-view-lesson mb-1 shadow-sm" 
-                                    data-content-id="${subject.id}-${sub.type}">
-                                <i class="bi ${sub.icon} me-2"></i>${sub.name}
-                            </button>`;
-          }
-        });
-      }
-
-      const isShowActive = index === 0 ? "show active" : "";
       contentContainer.innerHTML += `
                 <div class="tab-pane fade ${isShowActive}" id="content-${subject.id}" role="tabpanel">
                     <div class="d-flex align-items-center mb-3">
@@ -119,7 +183,7 @@ async function loadSubjectsFromJSON() {
                             <i class="bi bi-chevron-down"></i>
                         </button>
                         <div class="collapse mt-2" id="menu-${subject.id}">
-                            <div class="card card-body bg-light border-0"><div class="d-grid">${subButtonsHTML}</div></div>
+                            <div class="card card-body bg-light border-0"><div class="d-grid">${buildLessonButtons(subject)}</div></div>
                         </div>
                     </div>
                     <div class="alert alert-${subject.noteColor} border-start bg-opacity-10">
@@ -128,17 +192,15 @@ async function loadSubjectsFromJSON() {
                     </div>
                 </div>`;
     });
+
     if (data.length > 0) {
-      if (downloadBtn) downloadBtn.href = data[0].file;
-      setTimeout(() => {
-        if (typeof loadFlashcards === "function") {
-          loadFlashcards(data[0].id, data[0].code);
-        } else {
-          console.error(
-            "Hàm loadFlashcards chưa được định nghĩa! Kiểm tra lại file flashcard.js",
-          );
-        }
-      }, 300);
+      if (downloadBtn) {
+        downloadBtn.href = data[0].file;
+      }
+
+      if (typeof loadFlashcards === "function") {
+        setTimeout(() => loadFlashcards(data[0].id, data[0].code), 150);
+      }
     }
   } catch (error) {
     console.error("Lỗi:", error);
@@ -147,7 +209,6 @@ async function loadSubjectsFromJSON() {
 
 document.addEventListener("DOMContentLoaded", loadSubjectsFromJSON);
 
-// === PHẦN 3: TÌM KIẾM BÀI HỌC ===
 function findLessonDeep(lessons, targetType) {
   for (const lesson of lessons) {
     if (lesson.type === targetType) return lesson;
@@ -160,58 +221,90 @@ function findLessonDeep(lessons, targetType) {
   return null;
 }
 
-document.addEventListener("click", function (e) {
+document.addEventListener("click", async function (e) {
   const btn = e.target.closest(".btn-view-lesson");
-  if (btn) {
-    const contentId = btn.getAttribute("data-content-id");
-    const dashIndex = contentId.indexOf("-");
-    const subjectId = contentId.substring(0, dashIndex);
-    const lessonType = contentId.substring(dashIndex + 1);
+  if (!btn) {
+    return;
+  }
 
-    const subject = subjectsData.find((s) => s.id === subjectId);
+  const contentId = btn.getAttribute("data-content-id");
+  const dashIndex = contentId.indexOf("-");
+  const subjectId = contentId.substring(0, dashIndex);
+  const lessonType = contentId.substring(dashIndex + 1);
 
-    if (subject && subject.subLessons) {
-      const lesson = findLessonDeep(subject.subLessons, lessonType);
+  try {
+    const subject = await ensureSubjectContentLoaded(subjectId);
+    const lesson = findLessonDeep(subject.subLessons || [], lessonType);
 
-      if (lesson) {
-        // Đổ dữ liệu vào Offcanvas
-        const contentContainer = document.getElementById("offcanvasContent");
-        document.getElementById("offcanvasTitle").textContent = lesson.name;
-        contentContainer.innerHTML = lesson.content;
+    if (!lesson) {
+      return;
+    }
 
-        // Gọi MathJax để render lại công thức toán học
-        // Chúng ta đợi nội dung HTML được nạp xong rồi mới ra lệnh render
-        if (window.MathJax && window.MathJax.typesetPromise) {
-          window.MathJax.typesetPromise([contentContainer]).catch(
-            function (err) {
-              console.error("MathJax error:", err.message);
-            },
-          );
-        }
+    const contentContainer = document.getElementById("offcanvasContent");
+    document.getElementById("offcanvasTitle").textContent = lesson.name;
+    contentContainer.innerHTML = lesson.content || "<p>Chưa có nội dung.</p>";
 
-        // Hiển thị Offcanvas
-        const offcanvasElement = document.getElementById("lessonOffcanvas");
-        const offcanvas =
-          bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
-        offcanvas.show();
+    if (lessonMayContainMath(lesson.content)) {
+      try {
+        await ensureMathJaxLoaded();
+        await window.MathJax.typesetPromise([contentContainer]);
+      } catch (err) {
+        console.error("MathJax error:", err.message);
       }
     }
+
+    const offcanvasElement = document.getElementById("lessonOffcanvas");
+    const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+    offcanvas.show();
+  } catch (error) {
+    console.error("Lỗi tải bài học:", error);
   }
 });
 
-// === PHẦN 4: NAVBAR SCROLL ===
-window.addEventListener("scroll", function () {
-  const navbar = document.querySelector(".navbar");
-  if (navbar) {
+window.addEventListener(
+  "scroll",
+  function () {
+    const navbar = document.querySelector(".navbar");
+    if (!navbar) {
+      return;
+    }
+
     if (window.scrollY > 50) {
       navbar.classList.add("scrolled");
     } else {
       navbar.classList.remove("scrolled");
     }
-  }
-});
+  },
+  { passive: true },
+);
 
-// === PHẦN 5: LOAD CHALLENGES ===
+function activateChallengeContent(contentId) {
+  document
+    .querySelectorAll(".timeline-node")
+    .forEach((el) => el.classList.remove("active"));
+  document
+    .querySelectorAll("#challenge-tabContent .tab-pane")
+    .forEach((el) => el.classList.remove("show", "active"));
+
+  const node = document.querySelector(`[data-content-target="${contentId}"]`);
+  const contentEl = document.getElementById(contentId);
+
+  if (node) {
+    node.classList.add("active");
+  }
+
+  if (!contentEl) {
+    return;
+  }
+
+  contentEl.classList.add("show", "active");
+
+  const image = contentEl.querySelector("img[data-src]");
+  if (image && !image.getAttribute("src")) {
+    image.setAttribute("src", image.dataset.src);
+  }
+}
+
 async function loadChallengesFromJSON() {
   const tabContainer = document.getElementById("challenge-tab");
   const contentContainer = document.getElementById("challenge-tabContent");
@@ -238,30 +331,22 @@ async function loadChallengesFromJSON() {
     data.forEach((item, index) => {
       const isActive = index === 0 ? "active" : "";
       const isShowActive = index === 0 ? "show active" : "";
-
+      const contentId = `content-${item.id}`;
       const nodeItem = document.createElement("div");
-      nodeItem.className = `timeline-node ${isActive}`;
-
-      nodeItem.onclick = function () {
-        document
-          .querySelectorAll(".timeline-node")
-          .forEach((el) => el.classList.remove("active"));
-        document
-          .querySelectorAll(".tab-pane")
-          .forEach((el) => el.classList.remove("show", "active"));
-        this.classList.add("active");
-        const contentEl = document.getElementById(`content-${item.id}`);
-        if (contentEl) contentEl.classList.add("show", "active");
-      };
-
       const quizCategory = item.category || "GEN";
       const imgUrl =
         item.image || `https://placehold.co/650x450?text=${item.code}`;
 
+      nodeItem.className = `timeline-node ${isActive}`;
+      nodeItem.dataset.contentTarget = contentId;
+      nodeItem.onclick = function () {
+        activateChallengeContent(contentId);
+      };
+
       nodeItem.innerHTML = `
                 <div class="node-card-wrapper">
                     <div class="card" style="width: 12rem;"> 
-                        <img src="${imgUrl}" class="card-img-top" alt="${item.name}" style="height: 140px; object-fit: cover;">
+                        <img src="${imgUrl}" class="card-img-top" alt="${item.name}" style="height: 140px; object-fit: cover;" loading="${index === 0 ? "eager" : "lazy"}" decoding="async" ${index === 0 ? 'fetchpriority="high"' : ""}>
                         <div class="card-body text-center">
                             <h6 class="card-title text-primary">${item.code}</h6>
                             <p class="card-text text-muted text-truncate" style="font-size: 0.8rem;">${item.name}</p>
@@ -277,21 +362,29 @@ async function loadChallengesFromJSON() {
             `;
       nodesArea.appendChild(nodeItem);
 
-      const contentItem = `
-                <div class="tab-pane fade ${isShowActive}" id="content-${item.id}">
+      const mindmapImage =
+        index === 0
+          ? `<img src="${item.mindmap}" loading="eager" decoding="async" fetchpriority="high" alt="${item.name} mindmap">`
+          : `<img data-src="${item.mindmap}" loading="lazy" decoding="async" alt="${item.name} mindmap">`;
+
+      contentContainer.innerHTML += `
+                <div class="tab-pane fade ${isShowActive}" id="${contentId}">
                     <div class="card shadow border-0 rounded-4 mt-5">
                         <div class="card-body p-5">
                             <span class="badge bg-primary bg-gradient-primary-to-secondary mb-3 px-3 py-2 rounded-pill">${item.code}</span>
                             <h2 class="fw-bolder mb-3">${item.name}</h2>
                             <p class="lead text-muted mb-4">Xem lại kiến thức môn học qua mindmap</p>
                             <hr>
-                            <img src="${item.mindmap}"> 
+                            ${mindmapImage}
                         </div>
                     </div>
                 </div>
             `;
-      contentContainer.innerHTML += contentItem;
     });
+
+    if (data.length > 0) {
+      activateChallengeContent(`content-${data[0].id}`);
+    }
   } catch (error) {
     console.error("Lỗi tải data JSON:", error);
   }
@@ -299,8 +392,8 @@ async function loadChallengesFromJSON() {
 
 document.addEventListener("DOMContentLoaded", loadChallengesFromJSON);
 
-// === PHẦN 6: QUIZ SYSTEM ===
-const API_URL = "https://roadmapse.onrender.com/api/quiz";
+// === PHAN 6: QUIZ SYSTEM ===
+const API_URL = "/api/quiz";
 
 let questions = [];
 let currentIdx = 0;
@@ -309,7 +402,6 @@ let hasAnswered = false;
 let userQuizHistory = [];
 let currentCategory = "";
 
-// Hàm lấy điểm cao nhất từ localStorage
 function getHighScore(category) {
   const scores = JSON.parse(
     localStorage.getItem("roadmap_high_scores") || "{}",
@@ -317,7 +409,6 @@ function getHighScore(category) {
   return scores[category] || 0;
 }
 
-// Hàm lưu điểm cao nhất
 function saveHighScore(category, newScore) {
   const scores = JSON.parse(
     localStorage.getItem("roadmap_high_scores") || "{}",
@@ -327,6 +418,7 @@ function saveHighScore(category, newScore) {
     localStorage.setItem("roadmap_high_scores", JSON.stringify(scores));
   }
 }
+
 function shuffleArray(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -335,6 +427,7 @@ function shuffleArray(array) {
   }
   return arr;
 }
+
 async function fetchQuestions(categoryCode) {
   questions = [];
   currentIdx = 0;
@@ -347,7 +440,6 @@ async function fetchQuestions(categoryCode) {
   document.getElementById("quiz-modal").style.display = "flex";
   document.body.style.overflow = "hidden";
 
-  // Kiểm tra riêng tiến trình dở dang của MÔN NÀY
   const saved = loadQuizProgress(categoryCode);
   if (saved) {
     const resume = confirm(
@@ -360,9 +452,8 @@ async function fetchQuestions(categoryCode) {
       userQuizHistory = saved.userQuizHistory;
       loadQuestion();
       return;
-    } else {
-      clearQuizProgress(categoryCode);
     }
+    clearQuizProgress(categoryCode);
   }
 
   quizContentEl.innerHTML =
@@ -373,7 +464,7 @@ async function fetchQuestions(categoryCode) {
     const rawData = await res.json();
     const questionsData = rawData.data || rawData;
 
-    let allQuestions = questionsData.map((item) => ({
+    const allQuestions = questionsData.map((item) => ({
       id: item.id,
       text: item.question_text,
       options: [item.option_a, item.option_b, item.option_c, item.option_d],
@@ -400,7 +491,6 @@ function loadQuestion() {
   nextBtn.innerText =
     currentIdx === questions.length - 1 ? "Kết thúc" : "Tiếp theo";
 
-  // Shuffle đáp án
   const optionsWithLabels = q.options.map((opt, idx) => ({
     text: opt,
     originalLabel: labels[idx],
@@ -408,7 +498,7 @@ function loadQuestion() {
   const shuffledOptions = shuffleArray(optionsWithLabels);
   q.shuffledCorrect =
     labels[shuffledOptions.findIndex((opt) => opt.originalLabel === q.correct)];
-  q.displayOptions = shuffledOptions; // Lưu lại để review
+  q.displayOptions = shuffledOptions;
 
   document.getElementById("quiz-content").innerHTML = `
         <div class="question-text"><h4>Câu ${currentIdx + 1}/${questions.length}: ${q.text}</h4></div>
@@ -423,7 +513,7 @@ function loadQuestion() {
               .join("")}
         </div>
         <div id="explanation" class="explanation-box" style="display:none">
-            <strong>💡 Giải thích:</strong> <span>${q.explanation || "Không có giải thích."}</span>
+            <strong>Giải thích:</strong> <span>${q.explanation || "Không có giải thích."}</span>
         </div>`;
 
   document.getElementById("question-status").innerText =
@@ -433,6 +523,7 @@ function loadQuestion() {
     startQuizTimer();
   }
 }
+
 function closeQuiz() {
   if (questions.length > 0 && currentIdx < questions.length) {
     saveQuizProgress();
@@ -468,10 +559,9 @@ function selectAnswer(userPick) {
   const userBtn = document.getElementById(`opt-${userPick}`);
   document.getElementById("next-btn").disabled = false;
 
-  // Lưu lịch sử
   userQuizHistory.push({
     question: q.text,
-    userPick: userPick,
+    userPick,
     correctLabel: q.shuffledCorrect,
     isCorrect: userPick === q.shuffledCorrect,
     explanation: q.explanation,
@@ -489,35 +579,32 @@ function selectAnswer(userPick) {
     document.getElementById("explanation").style.display = "block";
   }
 }
-// Lưu tiến trình (Hỗ trợ lưu nhiều môn độc lập)
+
 function saveQuizProgress() {
   if (questions.length === 0 || currentIdx >= questions.length) return;
 
-  // Lấy cuốn sổ cũ ra (nếu có), không có thì tạo mới {}
   const allProgress = JSON.parse(
     localStorage.getItem("roadmap_quiz_progress") || "{}",
   );
 
-  // Lưu trang mới cho môn hiện tại
   allProgress[currentCategory] = {
     category: currentCategory,
-    questions: questions,
-    currentIdx: currentIdx,
-    score: score,
-    userQuizHistory: userQuizHistory,
-    lastUpdated: Date.now(), // Đánh dấu thời gian để biết môn nào làm gần nhất
+    questions,
+    currentIdx,
+    score,
+    userQuizHistory,
+    lastUpdated: Date.now(),
   };
   localStorage.setItem("roadmap_quiz_progress", JSON.stringify(allProgress));
 }
 
-// Load tiến trình (Lấy theo môn, hoặc lấy tất cả)
 function loadQuizProgress(categoryCode = null) {
   try {
     const allProgress = JSON.parse(
       localStorage.getItem("roadmap_quiz_progress") || "{}",
     );
     if (categoryCode) {
-      return allProgress[categoryCode] || null; // Lấy đúng môn đang hỏi
+      return allProgress[categoryCode] || null;
     }
     return allProgress;
   } catch {
@@ -525,7 +612,6 @@ function loadQuizProgress(categoryCode = null) {
   }
 }
 
-// Xóa tiến trình của một môn cụ thể khi hoàn thành
 function clearQuizProgress(categoryCode) {
   const allProgress = JSON.parse(
     localStorage.getItem("roadmap_quiz_progress") || "{}",
@@ -536,7 +622,6 @@ function clearQuizProgress(categoryCode) {
   }
 }
 
-// LƯU TỰ ĐỘNG KHI F5 HOẶC ĐÓNG TAB
 window.addEventListener("beforeunload", function () {
   if (questions.length > 0 && currentIdx < questions.length) {
     saveQuizProgress();
@@ -545,7 +630,7 @@ window.addEventListener("beforeunload", function () {
 
 function showResult() {
   if (typeof stopQuizTimer === "function") stopQuizTimer();
-  saveHighScore(currentCategory, score); // Lưu điểm cao nhất
+  saveHighScore(currentCategory, score);
 
   const percent = Math.round((score / questions.length) * 100);
   const highScore = getHighScore(currentCategory);
@@ -562,7 +647,6 @@ function showResult() {
   document.querySelector(".quiz-footer").style.display = "none";
 }
 
-// Hàm hiển thị chế độ Review
 function renderReviewMode() {
   let reviewHTML = `<div class="review-container p-3" style="max-height: 60vh; overflow-y: auto;">
         <h5 class="mb-4 text-primary">Chi tiết bài làm:</h5>`;
@@ -574,7 +658,7 @@ function renderReviewMode() {
                     <h6>Câu ${index + 1}: ${item.question}</h6>
                     <p class="small mb-1">Đáp án của bạn: <span class="${item.isCorrect ? "text-success fw-bold" : "text-danger fw-bold"}">${item.userPick}</span></p>
                     <p class="small mb-2 text-success">Đáp án đúng: <strong>${item.correctLabel}</strong></p>
-                    <div class="p-2 bg-light rounded small"><strong>💡 Giải thích:</strong> ${item.explanation || "Không có."}</div>
+                    <div class="p-2 bg-light rounded small"><strong>Giải thích:</strong> ${item.explanation || "Không có."}</div>
                 </div>
             </div>`;
   });
@@ -583,8 +667,7 @@ function renderReviewMode() {
   document.getElementById("quiz-content").innerHTML = reviewHTML;
 }
 
-// === PHẦN 7: CONTACT FORM ===
-const FEEDBACK_URL = "https://roadmapse.onrender.com/feedback";
+const FEEDBACK_URL = "/api/feedback";
 const contactForm = document.getElementById("contactForm");
 
 const patterns = {
@@ -594,9 +677,8 @@ const patterns = {
   message: /^[\s\S]{10,500}$/,
 };
 
-// Thông báo lỗi tương ứng
 const errorMessages = {
-  name: "Tên phải từ 3-50 ký tự chữ cái (không bao gồm số).",
+  name: "Tên phải từ 3-50 ký tự chữ cái.",
   email: "Email không hợp lệ.",
   phone: "Số điện thoại không đúng định dạng VN.",
   message: "Tin nhắn cần dài từ 10-500 ký tự.",
@@ -629,28 +711,22 @@ function validateField(input) {
   const value = input.value.trim();
   const fieldName = input.id;
 
-  // Trường phone là optional
   if (fieldName === "phone" && value === "") {
     input.classList.remove("is-invalid", "is-valid");
     return true;
   }
 
-  // Kiểm tra required fields
   if (input.hasAttribute("required") && value === "") {
     showError(input, "Trường này không được để trống.");
     return false;
   }
 
-  // Kiểm tra pattern
   if (patterns[fieldName]) {
     const isValid = patterns[fieldName].test(value);
 
     if (!isValid) {
       showError(input, errorMessages[fieldName]);
       return false;
-    } else {
-      showSuccess(input);
-      return true;
     }
   }
 
@@ -659,8 +735,6 @@ function validateField(input) {
 }
 
 if (contactForm) {
-  console.log("Contact Form Script Loaded!");
-
   const inputs = contactForm.querySelectorAll("input, textarea");
 
   inputs.forEach((input) => {
@@ -680,12 +754,9 @@ if (contactForm) {
     });
   });
 
-  // Xử lý submit
   contactForm.addEventListener("submit", async function (e) {
     e.preventDefault();
-    console.log("Submitting...");
 
-    // Validate tất cả các fields
     let isFormValid = true;
     inputs.forEach((input) => {
       if (!validateField(input)) {
@@ -706,7 +777,6 @@ if (contactForm) {
       return;
     }
 
-    // Gửi dữ liệu khi mọi thứ OK
     const submitBtn = contactForm.querySelector("button[type='submit']");
     const originalBtnText = submitBtn.innerHTML;
 
@@ -731,7 +801,6 @@ if (contactForm) {
       const result = await res.json();
 
       if (res.ok && result.success) {
-        // Hiển thị thông báo thành công
         const successAlert = document.createElement("div");
         successAlert.className = "alert alert-success form-alert mt-3";
         successAlert.innerHTML = `
@@ -773,12 +842,11 @@ if (contactForm) {
     }
   });
 }
-//  Phần 8: Thông báo nhắc nhở làm quiz
+
 document.addEventListener("DOMContentLoaded", function () {
   const allSaved = loadQuizProgress();
   if (!allSaved || Object.keys(allSaved).length === 0) return;
 
-  // Tìm môn học được làm gần đây nhất
   let mostRecent = null;
   for (const key in allSaved) {
     if (!mostRecent || allSaved[key].lastUpdated > mostRecent.lastUpdated) {
@@ -798,7 +866,7 @@ document.addEventListener("DOMContentLoaded", function () {
         border-left: 4px solid #f97316;
     `;
   banner.innerHTML = `
-        <p class="mb-2 fw-bold">📝 Quiz đang dở!</p>
+        <p class="mb-2 fw-bold">Quiz đang dở!</p>
         <p class="mb-3 text-muted small">Bạn đang làm <strong>${saved.category}</strong> - Câu ${saved.currentIdx + 1}/${saved.questions.length}</p>
         <div class="d-flex gap-2">
             <button onclick="resumeQuiz('${saved.category}')" class="btn btn-primary btn-sm rounded-pill px-3">Tiếp tục</button>

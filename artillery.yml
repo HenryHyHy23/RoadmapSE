@@ -1,0 +1,38 @@
+config:
+  target: "http://127.0.0.1:3000"
+  phases:
+    - name: warm_up
+      duration: 30
+      arrivalRate: 1
+    - name: ui_load
+      duration: 60
+      arrivalRate: 3
+  engines:
+    playwright:
+      launchOptions:
+        headless: true
+      defaultNavigationTimeout: 30
+      aggregateByName: true
+      extendedMetrics: true
+      trace:
+        enabled: true
+        maxConcurrentRecordings: 3
+  plugins:
+    ensure:
+      thresholds:
+        - "browser.page.LCP.agg.p95": 5000
+        - "browser.page.FCP.agg.p95": 3000
+  processor: "./flows.js"
+
+scenarios:
+  - name: learn_ui
+    engine: playwright
+    testFunction: "learnFlow"
+
+  - name: challenge_ui
+    engine: playwright
+    testFunction: "challengeFlow"
+
+  - name: contact_ui
+    engine: playwright
+    testFunction: "contactFlow"

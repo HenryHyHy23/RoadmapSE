@@ -5,6 +5,9 @@ const path    = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const fs = require('fs');
+
+let challengeCache = null;
 
 // ── Middleware
 app.use(cors());
@@ -39,11 +42,13 @@ app.use('/api/quiz',      quizRoutes);
 app.use('/api/feedback',  feedbackRoutes);
 app.use('/api/subjects',  subjectRoutes);
 app.get('/api/challenges', (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
     try {
-        const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'src/data/challenge-data.json'), 'utf-8'));
-        res.json(data);
+        if (!challengeCache) {
+            challengeCache = JSON.parse(
+                fs.readFileSync(path.join(__dirname, 'src/data/challenge-data.json'), 'utf-8')
+            );
+        }
+        res.json(challengeCache);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
