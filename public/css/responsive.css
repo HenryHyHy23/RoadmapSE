@@ -2005,7 +2005,6 @@ img {
    FIX LỖI TRÀN NỘI DUNG TRONG TRANG HỌC TẬP (MOBILE)
    ========================================== */
 @media (max-width: 767px) {
-  /* 1. Xử lý Bảng (Table) bị đâm thủng lề: Ép cuộn ngang tự do bên trong thẻ */
   .card-content .data-table {
     display: block !important;
     width: 100% !important;
@@ -2021,7 +2020,6 @@ img {
     font-size: 0.85rem !important;
   }
 
-  /* 2. Xử lý khối Code SQL bị tràn */
   .sql-code {
     overflow-x: auto !important;
     white-space: pre-wrap !important; /* Tự động rớt dòng nếu code quá dài */
@@ -2065,32 +2063,25 @@ img {
    FIX LỖI CÔNG THỨC TOÁN HỌC (MATHJAX) TRÀN MÀN HÌNH
    ========================================== */
 @media (max-width: 767px) {
-  /* 1. Thu nhỏ tổng thể kích thước công thức trên điện thoại */
   mjx-container {
-    font-size: 85% !important; /* Giảm xuống 85% so với bình thường */
+    font-size: 85% !important;
   }
-
-  /* 2. Ép các công thức quá dài có thanh cuộn ngang độc lập */
   mjx-container[jax="CHTML"] {
     max-width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
-    /* Giúp vuốt mượt mà trên màn hình cảm ứng (iPhone/Android) */
     -webkit-overflow-scrolling: touch;
-    /* Đẩy nhẹ lên để thanh cuộn (nếu hiện) không đè vào công thức */
     padding-bottom: 4px !important;
   }
 
-  /* 3. Xử lý các thẻ list (li) chứa công thức dài để không bị đâm thủng lề */
   .card-content ul li {
     max-width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 8px; /* Tránh sát chữ quá */
+    padding-bottom: 8px;
   }
 
-  /* Ẩn thanh cuộn xấu xí trên giao diện Mobile (chỉ vuốt) */
   .card-content ul li::-webkit-scrollbar,
   mjx-container::-webkit-scrollbar {
     height: 3px;
