@@ -8,6 +8,7 @@ function uniqueSuffix() {
 async function openPage(page, path) {
   await page.context().clearCookies();
 
+  // Reset state mỗi VU và đổi các request hard-code remote về local app.
   await page.addInitScript((localBase, remoteOrigin) => {
     localStorage.clear();
     sessionStorage.clear();
@@ -38,6 +39,7 @@ async function openPage(page, path) {
 }
 
 async function learnFlow(page) {
+  // Flow học tập: vào trang, chọn môn, mở lesson đầu tiên, thử qua flashcard.
   await openPage(page, "/learn");
 
   await page.waitForSelector("#v-pills-tab .timeline-item");
@@ -64,6 +66,7 @@ async function learnFlow(page) {
 }
 
 async function challengeFlow(page) {
+  // Flow challenge: vào trang, mở quiz đầu tiên, chọn 1 đáp án và bấm next.
   await openPage(page, "/challenge");
 
   await page.waitForSelector(".btn-quiz-start");
@@ -80,6 +83,7 @@ async function challengeFlow(page) {
 }
 
 async function contactFlow(page) {
+  // Flow contact: điền form hợp lệ và kiểm tra có alert phản hồi sau submit.
   await openPage(page, "/contact");
 
   const suffix = uniqueSuffix();

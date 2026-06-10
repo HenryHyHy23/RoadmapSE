@@ -393,7 +393,13 @@ async function loadChallengesFromJSON() {
 document.addEventListener("DOMContentLoaded", loadChallengesFromJSON);
 
 // === PHAN 6: QUIZ SYSTEM ===
-const API_URL = "/api/quiz";
+function getApiBaseUrl() {
+  const rawBaseUrl = window.APP_CONFIG?.apiBaseUrl || "";
+  return rawBaseUrl.replace(/\/+$/, "");
+}
+
+const API_BASE_URL = getApiBaseUrl();
+const API_URL = `${API_BASE_URL}/api/quiz`;
 
 let questions = [];
 let currentIdx = 0;
@@ -667,7 +673,7 @@ function renderReviewMode() {
   document.getElementById("quiz-content").innerHTML = reviewHTML;
 }
 
-const FEEDBACK_URL = "/api/feedback";
+const FEEDBACK_URL = `${API_BASE_URL}/api/feedback`;
 const contactForm = document.getElementById("contactForm");
 
 const patterns = {
