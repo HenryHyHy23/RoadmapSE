@@ -1,38 +1,66 @@
-const Feedback = require("../models/Feedback");
+const Feedback = require('../models/Feedback');
+
+function validateFeedbackInput(body) {
+  const errors = [];
+
+  if (!body.name || !body.name.trim()) {
+    errors.push('Name is required');
+  }
+
+  if (!body.email || !body.email.trim()) {
+    errors.push('Email is required');
+  }
+
+  if (!body.message || !body.message.trim()) {
+    errors.push('Message is required');
+  }
+
+  return errors;
+}
 
 const feedbackController = {
   async create(req, res) {
     try {
       const { name, email, phone, message } = req.body;
-
-      // Validate
-      const errors = [];
-      if (!name?.trim()) errors.push("Tên không được để trống");
-      if (!email?.trim()) errors.push("Email không được để trống");
-      if (!message?.trim()) errors.push("Nội dung không được để trống");
+      const errors = validateFeedbackInput(req.body);
 
       if (errors.length > 0) {
-        return res.status(400).json({ success: false, errors });
+        return res.status(400).json({
+          success: false,
+          errors,
+        });
       }
 
-      const insertId = await Feedback.create({ name, email, phone, message });
-      res.status(201).json({
+      await Feedback.create({ name, email, phone, message });
+
+      return res.status(201).json({
         success: true,
-        message: "Cảm ơn bạn đã phản hồi! 🦫",
+        message: 'Feedback saved successfully',
       });
-    } catch (err) {
-      console.error("[feedbackController.create]", err.message);
-      res.status(500).json({ success: false, message: "Lỗi lưu phản hồi" });
+    } catch (error) {
+      console.error('[feedbackController.create]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to save feedback',
+      });
     }
   },
 
   async getAll(req, res) {
     try {
       const feedbacks = await Feedback.getAll();
-      res.json({ success: true, total: feedbacks.length, data: feedbacks });
-    } catch (err) {
-      console.error("[feedbackController.getAll]", err.message);
-      res.status(500).json({ success: false, message: "Lỗi lấy dữ liệu" });
+
+      return res.json({
+        success: true,
+        total: feedbacks.length,
+        data: feedbacks,
+      });
+    } catch (error) {
+      console.error('[feedbackController.getAll]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to load feedback',
+      });
     }
   },
 };

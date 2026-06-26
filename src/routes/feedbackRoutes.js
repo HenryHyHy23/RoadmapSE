@@ -1,11 +1,9 @@
-const express            = require('express');
-const router             = express.Router();
+const express = require('express');
 const feedbackController = require('../controllers/feedbackController');
 
-// POST /api/feedback    → gửi feedback mới
-router.post('/', feedbackController.create);
+const router = express.Router();
 
-// GET  /api/feedback    → xem tất cả feedback (admin)
+router.post('/', feedbackController.create);
 router.get('/', feedbackController.getAll);
 
 module.exports = router;

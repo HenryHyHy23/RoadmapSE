@@ -1,0 +1,7 @@
+const VALID_QUIZ_CATEGORIES = ['JPD', 'DBI', 'MAS', 'LAB', 'SWEc'];
+const QUIZ_QUESTION_LIMIT = 30;
+
+module.exports = {
+  VALID_QUIZ_CATEGORIES,
+  QUIZ_QUESTION_LIMIT,
+};
