@@ -1,20 +1,18 @@
-const Question = require("../models/Question");
-const pool = require("../config/db");
-const SEED_DATA = require("../data/seeds");
+const Question = require('../models/Question');
+const Feedback = require('../models/Feedback');
+const pool = require('../config/db');
+const seedData = require('../data/seeds');
+const { VALID_QUIZ_CATEGORIES } = require('../constants/quiz');
 
 const quizController = {
-  /**
-   * GET /api/quiz/:category
-   */
   async getByCategory(req, res) {
     try {
       const { category } = req.params;
-      const VALID_CATEGORIES = ["JPD", "DBI", "MAS", "LAB", "SWEc"];
 
-      if (!VALID_CATEGORIES.includes(category)) {
+      if (!VALID_QUIZ_CATEGORIES.includes(category)) {
         return res.status(400).json({
           success: false,
-          message: `Category không hợp lệ. Chỉ chấp nhận: ${VALID_CATEGORIES.join(", ")}`,
+          message: `Category is invalid. Allowed values: ${VALID_QUIZ_CATEGORIES.join(', ')}`,
         });
       }
 
@@ -23,55 +21,61 @@ const quizController = {
       if (questions.length === 0) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy câu hỏi cho môn ${category}`,
+          message: `No questions found for category ${category}`,
         });
       }
 
-      res.json({ success: true, total: questions.length, data: questions });
-    } catch (err) {
-      console.error("[quizController.getByCategory]", err.message);
-      res.status(500).json({ success: false, message: "Lỗi lấy câu hỏi" });
+      return res.json({
+        success: true,
+        total: questions.length,
+        data: questions,
+      });
+    } catch (error) {
+      console.error('[quizController.getByCategory]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to load quiz questions',
+      });
     }
   },
 
-  /**
-   * GET /api/quiz/stats
-   * Thống kê số câu theo từng môn
-   */
   async getStats(req, res) {
     try {
       const stats = await Question.countByCategory();
-      res.json({ success: true, data: stats });
-    } catch (err) {
-      console.error("[quizController.getStats]", err.message);
-      res.status(500).json({ success: false, message: "Lỗi lấy thống kê" });
+
+      return res.json({
+        success: true,
+        data: stats,
+      });
+    } catch (error) {
+      console.error('[quizController.getStats]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to load quiz statistics',
+      });
     }
   },
 
-  /**
-   * GET /init-db
-   * Khởi tạo & seed database
-   */
   async initDatabase(req, res) {
     const connection = await pool.getConnection();
+
     try {
       await Question.createTable(connection);
-      const Feedback = require("../models/Feedback");
       await Feedback.createTable(connection);
-      await Question.bulkInsert(connection, SEED_DATA);
+      await Question.bulkInsert(connection, seedData);
 
-      const count = SEED_DATA.length;
-      connection.release();
-
-      console.log(` Init DB xong: ${count} câu hỏi đã được nạp`);
-      res.json({
+      return res.json({
         success: true,
-        message: `Nạp thành công ${count} câu hỏi lên Aiven!`,
+        message: `Loaded ${seedData.length} questions into the database`,
       });
-    } catch (err) {
+    } catch (error) {
+      console.error('[quizController.initDatabase]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    } finally {
       connection.release();
-      console.error("[quizController.initDatabase]", err.message);
-      res.status(500).json({ success: false, message: err.message });
     }
   },
 };

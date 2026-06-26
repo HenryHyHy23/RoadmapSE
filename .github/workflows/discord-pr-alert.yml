@@ -1,0 +1,37 @@
+name: Discord PR Alert
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  notify-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send PR info to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          jq -n \
+            --arg title "$PR_TITLE" \
+            --arg author "$PR_AUTHOR" \
+            --arg url "$PR_URL" \
+            --arg head "$HEAD_BRANCH" \
+            --arg base "$BASE_BRANCH" \
+            --arg body "$PR_BODY" \
+            '{
+              username: "PR Watcher Bot",
+              content: ("[PR Updated]\n\n**Title:** " + $title + "\n**Author:** " + $author + "\n**Branch:** `" + $head + "` -> `" + $base + "`\n**Link:** " + $url + "\n\n**Description:**\n" + if $body == "" then "No description" else $body end)
+            }' > payload.json
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               --data @payload.json \
+               "$DISCORD_WEBHOOK_URL"
