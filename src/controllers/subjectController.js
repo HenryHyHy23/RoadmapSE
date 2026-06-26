@@ -49,6 +49,34 @@ const subjectController = {
     }
   },
 
+  search(req, res) {
+    try {
+      const keyword = req.query.q;
+
+      if (!keyword || !keyword.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Query parameter "q" is required',
+        });
+      }
+
+      const subjects = Subject.search(keyword).map(buildSubjectSummary);
+
+      return res.json({
+        success: true,
+        keyword: keyword.trim(),
+        total: subjects.length,
+        data: subjects,
+      });
+    } catch (error) {
+      console.error('[subjectController.search]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to search subjects',
+      });
+    }
+  },
+
   getById(req, res) {
     try {
       const subject = Subject.getById(req.params.id);

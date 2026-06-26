@@ -22,6 +22,7 @@ router.get('/api', (req, res) => {
     version: '2.0.0',
     endpoints: {
       subjects: 'GET  /api/subjects',
+      subjectSearch: 'GET  /api/subjects/search?q=keyword',
       subject: 'GET  /api/subjects/:id',
       lessons: 'GET  /api/subjects/:id/lessons',
       quizStats: 'GET  /api/quiz/stats',
