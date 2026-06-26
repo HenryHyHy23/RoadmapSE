@@ -4,7 +4,7 @@ config:
     # Làm nóng app với tải nhẹ trước khi vào phase chính.
     - name: warm_up
       duration: 30
-      arrivalRate: 1
+      arrivalRate: 5
     # Phase chính để đo UI dưới tải nhẹ-trung bình.
     - name: ui_load
       duration: 60
@@ -22,7 +22,7 @@ config:
   plugins:
     ensure:
       thresholds:
-        - "browser.page.LCP.agg.p95": 80000
+        - "browser.page.LCP.agg.p95": 8000
         - "browser.page.FCP.agg.p95": 10000
   processor: "./flows.js"
 

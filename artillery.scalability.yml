@@ -1,0 +1,76 @@
+# $env:ARTILLERY_CLOUD_API_KEY="a9_3wz118ntt25pa5gzccy69dt3g8grzkxy"
+# npx artillery run .\artillery.yml --record --name "roadmapse-playwright-local"
+# npx artillery run .\artillery.scalability.yml --record -- name "roadmapse-scability"
+
+config:
+  target: "http://127.0.0.1:3000"
+  phases:
+    # Tăng tải dần cho browser-based load test, giữ mức vừa phải để phản ánh user journey thực tế.
+    - name: warm_up
+      duration: 60
+      arrivalRate: 1
+      rampTo: 3
+    - name: ramp_to_nominal
+      duration: 120
+      arrivalRate: 3
+      rampTo: 6
+    - name: sustain_nominal
+      duration: 180
+      arrivalRate: 6
+  environments:
+    cloud:
+      target: "https://roadmapse.onrender.com"
+    spike:
+      phases:
+        - name: warm_up
+          duration: 30
+          arrivalRate: 1
+          rampTo: 2
+        - name: spike_ramp
+          duration: 90
+          arrivalRate: 2
+          rampTo: 10
+        - name: hold_peak
+          duration: 120
+          arrivalRate: 10
+    soak: #soak là kiểu test giữ tải ổn định trong thời gian dài để xem hệ thống có bị xuống sức dần không.
+      phases:
+        - name: warm_up
+          duration: 30
+          arrivalRate: 1
+          rampTo: 2
+        - name: long_sustain
+          duration: 300
+          arrivalRate: 2
+  engines:
+    playwright:
+      launchOptions:
+        headless: true
+      defaultNavigationTimeout: 30
+      aggregateByName: true
+      extendedMetrics: true
+      trace:
+        enabled: false
+  plugins:
+    ensure: #ensure là plugin để đặt tiêu chí pass/fail
+      maxErrorRate: 5
+      thresholds:
+        - "browser.page.LCP.agg.p95": 10000
+        - "browser.page.FCP.agg.p95": 12000
+  processor: "./flows.js"
+
+scenarios:
+  - name: learn_ui
+    weight: 5
+    engine: playwright
+    testFunction: "learnFlow"
+
+  - name: challenge_ui
+    weight: 3
+    engine: playwright
+    testFunction: "challengeFlow"
+
+  - name: contact_ui
+    weight: 1
+    engine: playwright
+    testFunction: "contactFlow"
