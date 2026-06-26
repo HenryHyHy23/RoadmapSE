@@ -1,0 +1,42 @@
+name: Discord CodeRabbit Alert
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  notify-coderabbit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send CodeRabbit comment/review to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login || github.event.review.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body || github.event.review.body }}
+          PR_URL: ${{ github.event.issue.html_url || github.event.pull_request.html_url }}
+        run: |
+          echo "Author: $COMMENT_AUTHOR"
+
+          if [[ "$COMMENT_AUTHOR" != *"coderabbit"* ]]; then
+            echo "Not CodeRabbit. Skip."
+            exit 0
+          fi
+
+          SAFE_BODY=$(echo "$COMMENT_BODY" | head -c 1500)
+
+          jq -n \
+            --arg author "$COMMENT_AUTHOR" \
+            --arg body "$SAFE_BODY" \
+            --arg url "$PR_URL" \
+            '{
+              username: "CodeRabbit Relay Bot",
+              content: ("🐰 **CodeRabbit Review Detected**\n\n**Author:** " + $author + "\n**PR:** " + $url + "\n\n**Review Summary:**\n" + $body)
+            }' > payload.json
+
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               --data @payload.json \
+               "$DISCORD_WEBHOOK_URL"
