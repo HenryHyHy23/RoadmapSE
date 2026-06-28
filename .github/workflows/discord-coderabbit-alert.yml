@@ -31,36 +31,32 @@ jobs:
           echo "Author: $AUTHOR"
 
           BODY="${REVIEW_BODY:-$COMMENT_BODY}"
-          SAFE_BODY=$(echo "$BODY" | head -c 3500)
+          SAFE_BODY=$(echo "$BODY" | head -c 1500)
 
           if [[ "$EVENT_NAME" == "pull_request_review_comment" ]]; then
-            CONTENT="CodeRabbit Inline Review
-
-Author: $AUTHOR
-PR: $PR_URL
-File: ${FILE_PATH:-N/A}
-Line: ${LINE:-N/A}
-Side: ${SIDE:-N/A}
-Comment: ${COMMENT_URL:-N/A}
-
-$SAFE_BODY"
+            CONTENT=$(printf 'CodeRabbit Inline Review\n\nAuthor: %s\nPR: %s\nFile: %s\nLine: %s\nSide: %s\nComment: %s\n\n%s' \
+              "$AUTHOR" \
+              "$PR_URL" \
+              "${FILE_PATH:-N/A}" \
+              "${LINE:-N/A}" \
+              "${SIDE:-N/A}" \
+              "${COMMENT_URL:-N/A}" \
+              "$SAFE_BODY")
           elif [[ "$EVENT_NAME" == "pull_request_review" ]]; then
-            CONTENT="CodeRabbit PR Review
-
-Author: $AUTHOR
-State: ${STATE:-commented}
-PR: $PR_URL
-
-$SAFE_BODY"
+            CONTENT=$(printf 'CodeRabbit PR Review\n\nAuthor: %s\nState: %s\nPR: %s\n\n%s' \
+              "$AUTHOR" \
+              "${STATE:-commented}" \
+              "$PR_URL" \
+              "$SAFE_BODY")
           else
-            CONTENT="CodeRabbit Comment
-
-Author: $AUTHOR
-PR: $PR_URL
-Comment: ${COMMENT_URL:-N/A}
-
-$SAFE_BODY"
+            CONTENT=$(printf 'CodeRabbit Comment\n\nAuthor: %s\nPR: %s\nComment: %s\n\n%s' \
+              "$AUTHOR" \
+              "$PR_URL" \
+              "${COMMENT_URL:-N/A}" \
+              "$SAFE_BODY")
           fi
+
+          CONTENT=$(echo "$CONTENT" | head -c 1900)
 
           jq -n \
             --arg content "$CONTENT" \
