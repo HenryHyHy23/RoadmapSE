@@ -1,0 +1,87 @@
+name: Render Webhook Alert
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  notify-render-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Data to Render Spring Boot
+        env:
+          RENDER_API_URL: "https://discord-bot-service-9m6f.onrender.com/api/webhook/triage" 
+          
+          EVENT_NAME: ${{ github.event_name }}
+          REPO_FULL_NAME: ${{ github.repository }}
+          
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          PR_TITLE: ${{ github.event.pull_request.title || github.event.issue.title }}
+          PR_URL: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+          
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login || github.event.review.user.login || '' }}
+          COMMENT_BODY: ${{ github.event.comment.body || github.event.review.body || '' }}
+          
+          PR_AUTHOR: ${{ github.event.pull_request.user.login || '' }}
+          PR_BODY: ${{ github.event.pull_request.body || '' }}
+
+        run: |
+          GITHUB_USERNAME=""
+          SUMMARY=""
+          ALERT_TYPE="UNKNOWN"
+          SEVERITY="INFO"
+
+          # 1. Phân loại sự kiện và gán dữ liệu
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            ALERT_TYPE="PR_UPDATE"
+            GITHUB_USERNAME="$PR_AUTHOR"
+            SUMMARY="$PR_BODY"
+          elif [[ "$COMMENT_AUTHOR" == *"coderabbit"* ]]; then
+            ALERT_TYPE="CODERABBIT_REVIEW"
+            GITHUB_USERNAME="$COMMENT_AUTHOR"
+            SUMMARY="$COMMENT_BODY"
+            
+            # Phân tích mức độ nghiêm trọng nếu CodeRabbit có cảnh báo
+            if [[ "$SUMMARY" == *"fail"* ]] || [[ "$SUMMARY" == *"error"* ]]; then
+              SEVERITY="HIGH"
+            fi
+          else
+            echo "Not a PR update and not a CodeRabbit review. Skipping."
+            exit 0
+          fi
+
+          echo "Processing event: $ALERT_TYPE triggered by $GITHUB_USERNAME"
+
+          SAFE_SUMMARY=$(echo "$SUMMARY" | head -c 1500)
+
+          jq -n \
+            --arg repoFullName "$REPO_FULL_NAME" \
+            --argjson prNumber "${PR_NUMBER:-0}" \
+            --arg prTitle "$PR_TITLE" \
+            --arg prUrl "$PR_URL" \
+            --arg githubUsername "$GITHUB_USERNAME" \
+            --arg alertType "$ALERT_TYPE" \
+            --arg severity "$SEVERITY" \
+            --arg summary "$SAFE_SUMMARY" \
+            '{
+              repoFullName: $repoFullName,
+              prNumber: $prNumber,
+              prTitle: $prTitle,
+              prUrl: $prUrl,
+              githubUsername: $githubUsername,
+              alertType: $alertType,
+              severity: $severity,
+              summary: $summary,
+              changedFiles: []
+            }' > payload.json
+
+          echo "Sending payload to $RENDER_API_URL..."
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               --data @payload.json \
+               "$RENDER_API_URL"
