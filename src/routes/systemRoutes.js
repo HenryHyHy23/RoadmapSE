@@ -7,7 +7,7 @@ router.post("/feedback", (req, res) => {
   res.redirect(307, "/api/feedback");
 });
 
-router.get("/init-db", quizController.initDatabase);
+router.get("/init-db", quizControllers.initDatabase);
 
 router.get("/health", (req, res) => {
   res.json({
