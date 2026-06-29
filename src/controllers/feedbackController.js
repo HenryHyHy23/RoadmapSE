@@ -63,6 +63,63 @@ const feedbackController = {
       });
     }
   },
+
+  async getReport(req, res) {
+    try {
+      const feedbacks = await Feedback.getAll();
+      const keyword = (req.query.keyword || '').trim();
+      const sortBy = req.query.sortBy || 'created_at';
+      const limit = parseInt(req.query.limit || feedbacks.length, 10);
+      const previewLength = parseInt(req.query.preview || 200, 10);
+      const report = [];
+      const duplicateEmails = [];
+
+      for (const feedback of feedbacks) {
+        const searchableText = `${feedback.name || ''} ${feedback.email || ''} ${feedback.message || ''}`;
+
+        if (!keyword || searchableText.includes(keyword)) {
+          feedback.contact = `${feedback.email || ''} | ${feedback.phone || 'N/A'}`;
+          feedback.messagePreview = (feedback.message || '').slice(0, previewLength);
+          feedback.isRecent = Date.now() - new Date(feedback.created_at).getTime() < 24 * 60 * 60 * 1000;
+          report.push(feedback);
+        }
+      }
+
+      report.sort((left, right) => {
+        if (left[sortBy] == right[sortBy]) {
+          return 0;
+        }
+
+        return left[sortBy] > right[sortBy] ? 1 : -1;
+      });
+
+      for (let i = 0; i < report.length; i += 1) {
+        for (let j = i + 1; j < report.length; j += 1) {
+          if (report[i].email && report[i].email === report[j].email) {
+            duplicateEmails.push(report[i].email);
+          }
+        }
+      }
+
+      return res.json({
+        success: true,
+        keyword,
+        sortBy,
+        requestedLimit: limit,
+        previewLength,
+        totalFeedback: feedbacks.length,
+        matchedFeedback: report.length,
+        duplicateEmails,
+        data: report.slice(0, limit),
+      });
+    } catch (error) {
+      console.error('[feedbackController.getReport]', error.message);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to build feedback report',
+      });
+    }
+  },
 };
 
 module.exports = feedbackController;

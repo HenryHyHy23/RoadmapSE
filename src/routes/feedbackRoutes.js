@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/', feedbackController.create);
 router.get('/', feedbackController.getAll);
+router.get('/report', feedbackController.getReport);
 
 module.exports = router;
