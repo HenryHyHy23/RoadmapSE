@@ -5,35 +5,64 @@ on:
     types: [created]
   pull_request_review:
     types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   notify-coderabbit:
     runs-on: ubuntu-latest
+    if: contains(github.event.sender.login, 'coderabbit')
 
     steps:
-      - name: Send CodeRabbit comment/review to Discord
+      - name: Send CodeRabbit event to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          COMMENT_AUTHOR: ${{ github.event.comment.user.login || github.event.review.user.login }}
-          COMMENT_BODY: ${{ github.event.comment.body || github.event.review.body }}
-          PR_URL: ${{ github.event.issue.html_url || github.event.pull_request.html_url }}
+          EVENT_NAME: ${{ github.event_name }}
+          AUTHOR: ${{ github.event.sender.login }}
+          REVIEW_BODY: ${{ github.event.review.body }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_URL: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          FILE_PATH: ${{ github.event.comment.path }}
+          LINE: ${{ github.event.comment.line }}
+          SIDE: ${{ github.event.comment.side }}
+          STATE: ${{ github.event.review.state }}
         run: |
-          echo "Author: $COMMENT_AUTHOR"
+          echo "Author: $AUTHOR"
 
-          if [[ "$COMMENT_AUTHOR" != *"coderabbit"* ]]; then
-            echo "Not CodeRabbit. Skip."
-            exit 0
+          BODY="${REVIEW_BODY:-$COMMENT_BODY}"
+          SAFE_BODY=$(echo "$BODY" | head -c 1500)
+
+          if [[ "$EVENT_NAME" == "pull_request_review_comment" ]]; then
+            CONTENT=$(printf 'CodeRabbit Inline Review\n\nAuthor: %s\nPR: %s\nFile: %s\nLine: %s\nSide: %s\nComment: %s\n\n%s' \
+              "$AUTHOR" \
+              "$PR_URL" \
+              "${FILE_PATH:-N/A}" \
+              "${LINE:-N/A}" \
+              "${SIDE:-N/A}" \
+              "${COMMENT_URL:-N/A}" \
+              "$SAFE_BODY")
+          elif [[ "$EVENT_NAME" == "pull_request_review" ]]; then
+            CONTENT=$(printf 'CodeRabbit PR Review\n\nAuthor: %s\nState: %s\nPR: %s\n\n%s' \
+              "$AUTHOR" \
+              "${STATE:-commented}" \
+              "$PR_URL" \
+              "$SAFE_BODY")
+          else
+            CONTENT=$(printf 'CodeRabbit Comment\n\nAuthor: %s\nPR: %s\nComment: %s\n\n%s' \
+              "$AUTHOR" \
+              "$PR_URL" \
+              "${COMMENT_URL:-N/A}" \
+              "$SAFE_BODY")
           fi
 
-          SAFE_BODY=$(echo "$COMMENT_BODY" | head -c 1500)
+          CONTENT=$(echo "$CONTENT" | head -c 1900)
 
           jq -n \
-            --arg author "$COMMENT_AUTHOR" \
-            --arg body "$SAFE_BODY" \
-            --arg url "$PR_URL" \
+            --arg content "$CONTENT" \
             '{
               username: "CodeRabbit Relay Bot",
-              content: ("🐰 **CodeRabbit Review Detected**\n\n**Author:** " + $author + "\n**PR:** " + $url + "\n\n**Review Summary:**\n" + $body)
+              content: $content
             }' > payload.json
 
           curl -H "Content-Type: application/json" \

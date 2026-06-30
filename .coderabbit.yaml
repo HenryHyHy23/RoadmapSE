@@ -1,0 +1,36 @@
+language: "en-US"
+
+tone_instructions: >
+  Review in a concrete, implementation-focused way. Prioritize runtime bugs,
+  undefined variables, broken imports, route wiring issues, missing validation,
+  and risky Express error paths. When you flag an issue, always mention the
+  file, the exact risk, and a suggested fix direction.
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  changed_files_summary: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+    drafts: true
+
+  path_instructions:
+    - path: "src/routes/**"
+      instructions: |
+        Focus on:
+        - undefined identifiers and broken controller references
+        - wrong route/controller wiring
+        - redirect and HTTP status correctness
+        - Express handler errors that can crash app startup
+        - inconsistent API paths and response formats
+
+    - path: "src/controllers/**"
+      instructions: |
+        Focus on:
+        - missing input validation
+        - unhandled async errors
+        - database error handling
+        - response status codes and JSON shape consistency
