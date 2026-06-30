@@ -17,6 +17,8 @@ const app = express();
 
 // test fail case
 const prConflictRoutes = require("./routes/prConflictRoutes");
+const mergeStormRoutes = require("./routes/mergeStormRoutes");
+app.use("/api/merge-storm", mergeStormRoutes);
 app.use("/api/pr-conflict-lab", prConflictRoutes);
 //=========
 
